@@ -14,7 +14,7 @@ namespace litefeel.AlignTools
         [MenuItem("Window/Align Tools")]
         public static void Init()
         {
-            AlignToolsWindow window = GetWindow<AlignToolsWindow>(false, "Align Editor", true);
+            AlignToolsWindow window = GetWindow<AlignToolsWindow>(false, "Align Tools", true);
             window.Show();
         }
 
