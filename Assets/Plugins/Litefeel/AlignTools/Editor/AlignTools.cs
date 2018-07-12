@@ -69,7 +69,7 @@ namespace litefeel.AlignTools
             {
                 var pos = applyValue(rt, v);
                 Undo.RecordObject(rt, "Align UI");
-                rt.localPosition = pos;
+                rt.anchoredPosition3D = pos;
             }
         }
 
@@ -90,7 +90,7 @@ namespace litefeel.AlignTools
             {
                 var pos = applyValue(rt, v);
                 Undo.RecordObject(rt, "Align Center UI");
-                rt.localPosition = pos;
+                rt.anchoredPosition3D = pos;
             }
         }
 
@@ -130,7 +130,7 @@ namespace litefeel.AlignTools
                 var rt = vlist[i].rt;
                 var pos = applyValue(rt, minV + gap * i);
                 Undo.RecordObject(rt, "Distribution UI");
-                rt.localPosition = pos;
+                rt.anchoredPosition3D = pos;
             }
         }
         #endregion
@@ -246,48 +246,48 @@ namespace litefeel.AlignTools
         private static Vector3 ApplyValueLeft(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(v, 0, 0);
-            var pos = rt.localPosition;
-            pos.x += interPos.x + rt.pivot.x * rt.sizeDelta.x;
+            var pos = rt.anchoredPosition3D;
+            pos.x += interPos.x + rt.pivot.x * rt.rect.width;
             return pos;
         }
 
         private static Vector3 ApplyValueRight(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(v, 0, 0);
-            var pos = rt.localPosition;
-            pos.x += interPos.x - (1f - rt.pivot.x) * rt.sizeDelta.x;
+            var pos = rt.anchoredPosition3D;
+            pos.x += interPos.x - (1f - rt.pivot.x) * rt.rect.width;
             return pos;
         }
 
         private static Vector3 ApplyValueTop(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(0, v, 0);
-            var pos = rt.localPosition;
-            pos.y += interPos.y - (1 - rt.pivot.y) * rt.sizeDelta.y;
+            var pos = rt.anchoredPosition3D;
+            pos.y += interPos.y - (1 - rt.pivot.y) * rt.rect.height;
             return pos;
         }
 
         private static Vector3 ApplyValueBottom(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(0, v, 0);
-            var pos = rt.localPosition;
-            pos.y += interPos.y + rt.pivot.y * rt.sizeDelta.y;
+            var pos = rt.anchoredPosition3D;
+            pos.y += interPos.y + rt.pivot.y * rt.rect.height;
             return pos;
         }
 
         private static Vector3 ApplyValueCenterH(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(v, 0, 0);
-            var pos = rt.localPosition;
-            pos.x += interPos.x + (rt.pivot.x - 0.5f) * rt.sizeDelta.x;
+            var pos = rt.anchoredPosition3D;
+            pos.x += interPos.x + (rt.pivot.x - 0.5f) * rt.rect.width;
             return pos;
         }
 
         private static Vector3 ApplyValueCenterV(RectTransform rt, float v)
         {
             var interPos = rt.InverseTransformPoint(0, v, 0);
-            var pos = rt.localPosition;
-            pos.y += interPos.y + (rt.pivot.y - 0.5f) * rt.sizeDelta.y;
+            var pos = rt.anchoredPosition3D;
+            pos.y += interPos.y + (rt.pivot.y - 0.5f) * rt.rect.height;
             return pos;
         }
         #endregion
@@ -306,5 +306,3 @@ namespace litefeel.AlignTools
         }
     }
 }
-
-
