@@ -51,6 +51,22 @@ namespace litefeel.AlignTools
         {
             DistributionUI(CalcValueCenterV, ApplyValueCenterV);
         }
+        public static void ExpandWidth()
+        {
+            ExpandUI(CalcValueSizeH, ApplyValueSizeH, RectTransform.Axis.Horizontal);
+        }
+        public static void ExpandHeight()
+        {
+            ExpandUI(CalcValueSizeV, ApplyValueSizeV, RectTransform.Axis.Vertical);
+        }
+        public static void ShrinkWidth()
+        {
+            SharkUI(CalcValueSizeH, ApplyValueSizeH, RectTransform.Axis.Horizontal);
+        }
+        public static void ShrinkHeight()
+        {
+            SharkUI(CalcValueSizeV, ApplyValueSizeV, RectTransform.Axis.Vertical);
+        }
 
         #region logic
         private static void AlignUI(CalcValueOne calcValue, ApplyValue applyValue)
@@ -131,6 +147,44 @@ namespace litefeel.AlignTools
                 var pos = applyValue(rt, minV + gap * i);
                 Undo.RecordObject(rt, "Distribution UI");
                 rt.anchoredPosition3D = pos;
+            }
+        }
+        private static void ExpandUI(CalcValueTwo calcValue, ApplyValue applyValue, RectTransform.Axis axis)
+        {
+            var list = GetRectTransforms();
+            if (list.Count < 2) return;
+
+            float minV = 0f, maxV = 0f;
+            Vector3[] corners = new Vector3[4];
+            for (var i = 0; i < list.Count; i++)
+            {
+                list[i].GetWorldCorners(corners);
+                calcValue(corners, 0 == i, ref minV, ref maxV);
+            }
+            foreach (var rt in list)
+            {
+                var size = applyValue(rt, maxV);
+                Undo.RecordObject(rt, "Expand or Shark UI");
+                rt.SetSizeWithCurrentAnchors(axis, size.x);
+            }
+        }
+        private static void SharkUI(CalcValueTwo calcValue, ApplyValue applyValue, RectTransform.Axis axis)
+        {
+            var list = GetRectTransforms();
+            if (list.Count < 2) return;
+
+            float minV = 0f, maxV = 0f;
+            Vector3[] corners = new Vector3[4];
+            for (var i = 0; i < list.Count; i++)
+            {
+                list[i].GetWorldCorners(corners);
+                calcValue(corners, 0 == i, ref minV, ref maxV);
+            }
+            foreach (var rt in list)
+            {
+                var size = applyValue(rt, minV);
+                Undo.RecordObject(rt, "Expand or Shark UI");
+                rt.SetSizeWithCurrentAnchors(axis, size.x);
             }
         }
         #endregion
@@ -242,6 +296,33 @@ namespace litefeel.AlignTools
         }
         #endregion
 
+        #region calc size min and max
+        private static float CalcValueSizeH(Vector3[] corners, bool isFirst, ref float minV, ref float maxV)
+        {
+            var x = Mathf.Abs(corners[0].x - corners[2].x);
+            if (isFirst)
+                minV = maxV = x;
+            else
+            {
+                minV = Mathf.Min(minV, x);
+                maxV = Mathf.Max(maxV, x);
+            }
+            return x;
+        }
+        private static float CalcValueSizeV(Vector3[] corners, bool isFirst, ref float minV, ref float maxV)
+        {
+            var y = Mathf.Abs(corners[0].y - corners[2].y);
+            if (isFirst)
+                minV = maxV = y;
+            else
+            {
+                minV = Mathf.Min(minV, y);
+                maxV = Mathf.Max(maxV, y);
+            }
+            return y;
+        }
+        #endregion
+
         #region applay value
         private static Vector3 ApplyValueLeft(RectTransform rt, float v)
         {
@@ -289,6 +370,18 @@ namespace litefeel.AlignTools
             var pos = rt.anchoredPosition3D;
             pos.y += interPos.y + (rt.pivot.y - 0.5f) * rt.rect.height;
             return pos;
+        }
+        private static Vector3 ApplyValueSizeH(RectTransform rt, float v)
+        {
+            var interV = rt.InverseTransformVector(v, 0, 0);
+            v = interV.x * rt.localScale.x;
+            return new Vector3(v, v, v);
+        }
+        private static Vector3 ApplyValueSizeV(RectTransform rt, float v)
+        {
+            var interV = rt.InverseTransformVector(0, v, 0);
+            v = interV.y * rt.localScale.y;
+            return new Vector3(v, v, v);
         }
         #endregion
         

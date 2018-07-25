@@ -39,10 +39,27 @@ namespace litefeel.AlignTools
             DrawButton("align_center_v", AlignTools.AlignCenterV);
             DrawButton("align_bottom", AlignTools.AlignBottom);
             EditorGUILayout.EndHorizontal();
+
+            DrawLine();
             EditorGUILayout.BeginHorizontal();
             DrawButton("distribution_h", AlignTools.DistributionHorizontal);
             DrawButton("distribution_v", AlignTools.DistributionVertical);
             EditorGUILayout.EndHorizontal();
+
+            DrawLine();
+            EditorGUILayout.BeginHorizontal();
+            DrawButton("distribution_h", AlignTools.ExpandWidth);
+            DrawButton("distribution_v", AlignTools.ExpandHeight);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            DrawButton("distribution_h", AlignTools.ShrinkWidth);
+            DrawButton("distribution_v", AlignTools.ShrinkHeight);
+            EditorGUILayout.EndHorizontal();
+
+
+        private void DrawLine()
+        {
+            GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) });
         }
 
         private void DrawButton(string iconName, System.Action action)
