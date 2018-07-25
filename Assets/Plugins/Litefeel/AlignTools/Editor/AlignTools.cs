@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -189,7 +189,7 @@ namespace litefeel.AlignTools
         }
         #endregion
 
-        
+
         #region calc value left right top bottom
         private static void CalcValueLeft(Vector3[] corners, bool isFirst, ref float v)
         {
@@ -384,8 +384,8 @@ namespace litefeel.AlignTools
             return new Vector3(v, v, v);
         }
         #endregion
-        
-        private static List<RectTransform> GetRectTransforms()
+
+        public static List<RectTransform> GetRectTransforms()
         {
             var arr = Selection.transforms;
             var list = new List<RectTransform>();
@@ -399,3 +399,5 @@ namespace litefeel.AlignTools
         }
     }
 }
+
+

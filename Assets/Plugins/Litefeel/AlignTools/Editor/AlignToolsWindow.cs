@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -16,6 +16,7 @@ namespace litefeel.AlignTools
         {
             AlignToolsWindow window = GetWindow<AlignToolsWindow>(false, "Align Tools", true);
             window.Show();
+            window.autoRepaintOnSceneChange = true;
         }
 
         // Update the editor window when user changes something (mainly useful when selecting objects)
@@ -57,6 +58,10 @@ namespace litefeel.AlignTools
             EditorGUILayout.EndHorizontal();
 
 
+            DrawLine();
+            Settings.AdjustPositionByKeyboard = EditorGUILayout.ToggleLeft("Adjust Position By Keyboard", Settings.AdjustPositionByKeyboard);
+        }
+
         private void DrawLine()
         {
             GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) });
@@ -74,6 +79,29 @@ namespace litefeel.AlignTools
             string path = string.Format("{0}/Icons/{1}.png", editorPath, iconName);
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
+
+        private void OnEnable()
+        {
+            SceneView.onSceneGUIDelegate += OnSceneGUI;
+            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.onSceneGUIDelegate -= OnSceneGUI;
+            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyWindowItemOnGUI;
+        }
+
+        private void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+        {
+            AdjustPosition.Execute();
+        }
+        
+        private void OnSceneGUI(SceneView sceneView)
+        {
+            AdjustPosition.Execute();
+        }
+        
     }
 }
 
