@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -9,15 +9,6 @@ namespace litefeel.AlignTools
     {
 
         private static object editorPath;
-
-        // Creation of window
-        [MenuItem("Window/Align Tools")]
-        public static void Init()
-        {
-            AlignToolsWindow window = GetWindow<AlignToolsWindow>(false, "Align Tools", true);
-            window.Show();
-            window.autoRepaintOnSceneChange = true;
-        }
 
         // Update the editor window when user changes something (mainly useful when selecting objects)
         void OnInspectorUpdate()
