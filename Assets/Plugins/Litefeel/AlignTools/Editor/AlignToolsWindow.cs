@@ -41,11 +41,11 @@ namespace litefeel.AlignTools
             DrawLine();
             EditorGUILayout.BeginHorizontal();
             DrawButton("expand_h", AlignTools.ExpandWidth);
-            DrawButton("distribution_v", AlignTools.ExpandHeight);
+            DrawButton("expand_v", AlignTools.ExpandHeight);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignTools.ShrinkWidth);
-            DrawButton("distribution_v", AlignTools.ShrinkHeight);
+            DrawButton("shrink_h", AlignTools.ShrinkWidth);
+            DrawButton("shrink_v", AlignTools.ShrinkHeight);
             EditorGUILayout.EndHorizontal();
 
 
@@ -70,7 +70,8 @@ namespace litefeel.AlignTools
 
         private Texture LoadIcon(string iconName)
         {
-            string path = string.Format("{0}/Icons/{1}.png", editorPath, iconName);
+            var skinName = EditorGUIUtility.isProSkin ? "Dark" : "Light";
+            string path = string.Format("{0}/Icons/{1}/{2}.png", editorPath, skinName, iconName);
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
