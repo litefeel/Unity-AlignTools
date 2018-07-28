@@ -22,30 +22,30 @@ namespace litefeel.AlignTools
                 editorPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
             
             EditorGUILayout.BeginHorizontal();
-            DrawButton("align_left", AlignTools.AlignLeft);
-            DrawButton("align_center_h", AlignTools.AlignCenterH);
-            DrawButton("align_right", AlignTools.AlignRight);
+            DrawButton("align_left", AlignTools.AlignLeft, "Align Left");
+            DrawButton("align_center_h", AlignTools.AlignCenterH, "Align Center by Horizontal");
+            DrawButton("align_right", AlignTools.AlignRight, "Align Right");
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("align_top", AlignTools.AlignTop);
-            DrawButton("align_center_v", AlignTools.AlignCenterV);
-            DrawButton("align_bottom", AlignTools.AlignBottom);
-            EditorGUILayout.EndHorizontal();
-
-            DrawLine();
-            EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignTools.DistributionHorizontal, "Distribute by H");
-            DrawButton("distribution_v", AlignTools.DistributionVertical);
+            DrawButton("align_top", AlignTools.AlignTop, "Align Top");
+            DrawButton("align_center_v", AlignTools.AlignCenterV, "Align Center by Vertical");
+            DrawButton("align_bottom", AlignTools.AlignBottom, "Align Bottom");
             EditorGUILayout.EndHorizontal();
 
             DrawLine();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("expand_h", AlignTools.ExpandWidth);
-            DrawButton("expand_v", AlignTools.ExpandHeight);
+            DrawButton("distribution_h", AlignTools.DistributionHorizontal, "Distribute by Horizontal");
+            DrawButton("distribution_v", AlignTools.DistributionVertical, "Distribute by Vertical");
+            EditorGUILayout.EndHorizontal();
+
+            DrawLine();
+            EditorGUILayout.BeginHorizontal();
+            DrawButton("expand_h", AlignTools.ExpandWidth, "Expand Size by Horizontal");
+            DrawButton("expand_v", AlignTools.ExpandHeight, "Expand Size by Vertical");
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("shrink_h", AlignTools.ShrinkWidth);
-            DrawButton("shrink_v", AlignTools.ShrinkHeight);
+            DrawButton("shrink_h", AlignTools.ShrinkWidth, "Shrink Size by Horizontal");
+            DrawButton("shrink_v", AlignTools.ShrinkHeight, "Shrink Size by Vertical");
             EditorGUILayout.EndHorizontal();
 
 
