@@ -51,6 +51,8 @@ namespace litefeel.AlignTools
 
             DrawLine();
             Settings.AdjustPositionByKeyboard = EditorGUILayout.ToggleLeft("Adjust Position By Keyboard", Settings.AdjustPositionByKeyboard);
+
+            AdjustPosition.Execute();
         }
 
         private void DrawLine()
