@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -34,13 +34,13 @@ namespace litefeel.AlignTools
 
             DrawLine();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignTools.DistributionHorizontal);
+            DrawButton("distribution_h", AlignTools.DistributionHorizontal, "Distribute by H");
             DrawButton("distribution_v", AlignTools.DistributionVertical);
             EditorGUILayout.EndHorizontal();
 
             DrawLine();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignTools.ExpandWidth);
+            DrawButton("expand_h", AlignTools.ExpandWidth);
             DrawButton("distribution_v", AlignTools.ExpandHeight);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
@@ -58,10 +58,13 @@ namespace litefeel.AlignTools
             GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) });
         }
 
-        private void DrawButton(string iconName, System.Action action)
+        private GUIContent btnContent;
+        private void DrawButton(string iconName, System.Action action, string tooltip = null)
         {
-            Texture icon = LoadIcon(iconName);
-            if (GUILayout.Button(icon, GUILayout.ExpandWidth(false)))
+            if (null == btnContent) btnContent = new GUIContent();
+            btnContent.image = LoadIcon(iconName);
+            btnContent.tooltip = tooltip;
+            if (GUILayout.Button(btnContent, GUILayout.ExpandWidth(false)))
                 action();
         }
 
