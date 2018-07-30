@@ -1,6 +1,7 @@
 ## Align Tools
 
-[![Build Status](https://travis-ci.org/litefeel/Unity-AlignTools.svg?branch=master)](https://travis-ci.org/litefeel/Unity-AlignTools) [![Join the chat at https://gitter.im/litefeel/Unity-AlignTools](https://badges.gitter.im/litefeel/Unity-AlignTools.svg)](https://gitter.im/litefeel/Unity-AlignTools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/litefeel/Unity-AlignTools.svg?branch=master)](https://travis-ci.org/litefeel/Unity-AlignTools)
+[![Join the chat at https://gitter.im/litefeel/Unity-AlignTools](https://badges.gitter.im/litefeel/Unity-AlignTools.svg)](https://gitter.im/litefeel/Unity-AlignTools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [Align Tools][AlignTools] is just perfect Unity asset plugin to align gui object.  
 
