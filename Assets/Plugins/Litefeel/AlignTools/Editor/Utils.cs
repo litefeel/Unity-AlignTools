@@ -21,6 +21,7 @@ namespace litefeel.AlignTools
             return list;
         }
 
+    }
 }
 
 
