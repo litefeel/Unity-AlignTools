@@ -34,8 +34,8 @@ namespace litefeel.AlignTools
 
             DrawLine();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignTools.DistributionHorizontal, "Distribute by Horizontal");
-            DrawButton("distribution_v", AlignTools.DistributionVertical, "Distribute by Vertical");
+            DrawButton("distribution_h", AlignTools.DistributionGapHorizontal, "Distribute by Horizontal");
+            DrawButton("distribution_v", AlignTools.DistributionGapVertical, "Distribute by Vertical");
             EditorGUILayout.EndHorizontal();
 
             DrawLine();
