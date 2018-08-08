@@ -28,7 +28,7 @@ namespace litefeel.AlignTools
                 evt.Use();
                 var offset = new Vector2(ox, oy);
                 if (evt.control) offset *= 10;
-                foreach (var rt in AlignTools.GetRectTransforms())
+                foreach (var rt in Utils.GetRectTransforms())
                 {
                     Undo.RecordObject(rt, "AdjustPosition");
                     rt.anchoredPosition += offset;

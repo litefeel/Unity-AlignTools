@@ -71,7 +71,7 @@ namespace litefeel.AlignTools
         #region logic
         private static void AlignUI(CalcValueOne calcValue, ApplyValue applyValue)
         {
-            var list = GetRectTransforms();
+            var list = Utils.GetRectTransforms();
             if (list.Count < 2) return;
 
             float v = 0f;
@@ -91,7 +91,7 @@ namespace litefeel.AlignTools
 
         private static void AlignCenterUI(CalcValueTwo calcValue, ApplyValue applyValue)
         {
-            var list = GetRectTransforms();
+            var list = Utils.GetRectTransforms();
             if (list.Count < 2) return;
 
             float minV = 0f, maxV = 0f;
@@ -118,7 +118,7 @@ namespace litefeel.AlignTools
 
         private static void DistributionUI(CalcValueTwo calcValue, ApplyValue applyValue)
         {
-            var list = GetRectTransforms();
+            var list = Utils.GetRectTransforms();
             if (list.Count < 3) return;
 
             var vlist = new List<Value>(list.Count);
@@ -151,7 +151,7 @@ namespace litefeel.AlignTools
         }
         private static void ExpandUI(CalcValueTwo calcValue, ApplyValue applyValue, RectTransform.Axis axis)
         {
-            var list = GetRectTransforms();
+            var list = Utils.GetRectTransforms();
             if (list.Count < 2) return;
 
             float minV = 0f, maxV = 0f;
@@ -170,7 +170,7 @@ namespace litefeel.AlignTools
         }
         private static void SharkUI(CalcValueTwo calcValue, ApplyValue applyValue, RectTransform.Axis axis)
         {
-            var list = GetRectTransforms();
+            var list = Utils.GetRectTransforms();
             if (list.Count < 2) return;
 
             float minV = 0f, maxV = 0f;
@@ -385,18 +385,6 @@ namespace litefeel.AlignTools
         }
         #endregion
 
-        public static List<RectTransform> GetRectTransforms()
-        {
-            var arr = Selection.transforms;
-            var list = new List<RectTransform>();
-            foreach (var trans in arr)
-            {
-                var rt = trans as RectTransform;
-                if (!rt) continue;
-                list.Add(rt);
-            }
-            return list;
-        }
     }
 }
 
