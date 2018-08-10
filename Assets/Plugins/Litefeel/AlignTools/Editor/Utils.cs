@@ -21,6 +21,26 @@ namespace litefeel.AlignTools
             return list;
         }
 
+        internal static void WorldCorners(this RectTransform rt, Vector3[] corners)
+        {
+            rt.GetWorldCorners(corners);
+            var p1 = corners[0];
+            if (corners[0].x > corners[3].x)
+                Swap(ref corners[0], ref corners[3]);
+            if (corners[1].x > corners[2].x)
+                Swap(ref corners[1], ref corners[2]);
+            if (corners[0].y > corners[1].y)
+                Swap(ref corners[0], ref corners[1]);
+            if (corners[3].y > corners[2].y)
+                Swap(ref corners[3], ref corners[2]);
+        }
+
+        private static void Swap(ref Vector3 v1, ref Vector3 v2)
+        {
+            var tx = v1;
+            v1 = v2;
+            v2 = tx;
+        }
     }
 }
 
