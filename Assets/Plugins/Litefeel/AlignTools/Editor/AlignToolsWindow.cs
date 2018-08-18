@@ -8,8 +8,6 @@ namespace litefeel.AlignTools
     public class AlignToolsWindow : EditorWindow
     {
 
-        private static object editorPath;
-
         private Ruler _ruler;
 
         // Update the editor window when user changes something (mainly useful when selecting objects)
@@ -81,7 +79,7 @@ namespace litefeel.AlignTools
 
         private void OnEnable()
         {
-            editorPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
+            Utils.editorPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
 
             SceneView.onSceneGUIDelegate += OnSceneGUI;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
