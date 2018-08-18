@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -21,7 +21,6 @@ namespace litefeel.AlignTools
         }
     }
 
-    //[CustomEditor(typeof(Test))]
     public class Ruler
     {
 
@@ -30,6 +29,10 @@ namespace litefeel.AlignTools
         private Camera sceneCamera;
         const float RULER_SIZE = 20;
         private int MY_CONTROLE_HINT = typeof(Ruler).GetHashCode();
+        private int MyControlId
+        {
+            get { return  GUIUtility.GetControlID(MY_CONTROLE_HINT, FocusType.Passive); }
+        }
 
         private bool isDraging = false;
 
@@ -40,15 +43,12 @@ namespace litefeel.AlignTools
         internal void OnSceneGUI(SceneView sceneView)
         {
             if (!Settings.ShowRuler) return;
-            sceneView = SceneView.lastActiveSceneView;
             if (!sceneView.in2DMode) return;
             sceneCamera = sceneView.camera;
 
             size = sceneView.position.size;
 
             var evt = Event.current;
-            var controlID = GUIUtility.GetControlID(MY_CONTROLE_HINT, FocusType.Passive);
-            var eventType = evt.type;//.GetTypeForControl(controlID);
 
             Handles.BeginGUI();
             DrawTexture(new Vector2(size.x, RULER_SIZE));
@@ -58,12 +58,12 @@ namespace litefeel.AlignTools
             DrawLines();
 
             Line line;
-            switch (eventType)
+            switch (evt.type)
             {
                 case EventType.MouseDrag:
-                    Debug.Log($"hotControl:{GUIUtility.hotControl}");
-                    if (isDraging && evt.button == 0)
+                    if(evt.button == 0 && GUIUtility.hotControl == MyControlId)
                     {
+                        isDraging = true;
                         dragingLine.p = dragingLine.isH ? evt.mousePosition.y : evt.mousePosition.x;
                         evt.Use();
                     }
@@ -73,16 +73,14 @@ namespace litefeel.AlignTools
                     {
                         if (IsPointOnRulerArea(evt.mousePosition))
                         {
-                            isDraging = true;
-                            evt.Use();
                             dragingLine.isH = evt.mousePosition.x > evt.mousePosition.y;
                             dragingLine.p = 0;
-                            GUIUtility.hotControl = controlID;
-                            Debug.LogError($"Set hotControl:{controlID}");
+                            GUIUtility.hotControl = MyControlId;
                             cursor = MouseCursor.Pan;
+                            evt.Use();
                         }else if (IsPointOverLines(out line, evt.mousePosition))
                         {
-                            GUIUtility.hotControl = controlID;
+                            GUIUtility.hotControl = MyControlId;
                             cursor = MouseCursor.Pan;
                             dragingLine = line;
                             lines.Remove(line);
@@ -109,15 +107,12 @@ namespace litefeel.AlignTools
                 EditorGUIUtility.AddCursorRect(new Rect(Vector2.zero, size), cursor);
 
             sceneView.Repaint();
-            //SceneView.RepaintAll();
         }
 
         private void DrawLines()
         {
             if(isDraging)
-            {
                 DrawLine(dragingLine.P1(size), dragingLine.P2(size));
-            }
             foreach (var line in lines)
                 DrawLine(line.P1(size), line.P2(size));
         }
