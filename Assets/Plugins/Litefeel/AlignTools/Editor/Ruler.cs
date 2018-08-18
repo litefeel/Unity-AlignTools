@@ -11,6 +11,11 @@ namespace litefeel.AlignTools
         public bool isH;
         public float p;
 
+        public Vector3 P3
+        {
+            get { return new Vector3(p, p, 0); }
+        }
+
         public Vector2 P1(Vector2 size)
         {
             return isH ? new Vector2(0, p) : new Vector2(p, 0);
@@ -64,7 +69,8 @@ namespace litefeel.AlignTools
                     if(evt.button == 0 && GUIUtility.hotControl == MyControlId)
                     {
                         isDraging = true;
-                        dragingLine.p = dragingLine.isH ? evt.mousePosition.y : evt.mousePosition.x;
+                        var p = Gui2World(evt.mousePosition);
+                        dragingLine.p = dragingLine.isH ? p.y : p.x;
                         evt.Use();
                     }
                     break;
@@ -74,15 +80,14 @@ namespace litefeel.AlignTools
                         if (IsPointOnRulerArea(evt.mousePosition))
                         {
                             dragingLine.isH = evt.mousePosition.x > evt.mousePosition.y;
-                            dragingLine.p = 0;
                             GUIUtility.hotControl = MyControlId;
-                            cursor = MouseCursor.Pan;
+                            cursor = dragingLine.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                             evt.Use();
                         }else if (IsPointOverLines(out line, evt.mousePosition))
                         {
                             GUIUtility.hotControl = MyControlId;
-                            cursor = MouseCursor.Pan;
                             dragingLine = line;
+                            cursor = dragingLine.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                             lines.Remove(line);
                             isDraging = true;
                             evt.Use();
@@ -90,14 +95,18 @@ namespace litefeel.AlignTools
                     }
                     break;
                 case EventType.MouseUp:
-                    isDraging = false;
-                    cursor = MouseCursor.Arrow;
-                    if(!IsPointOnRulerArea(evt.mousePosition))
-                        lines.Add(dragingLine);
+                    if (evt.button == 0 && GUIUtility.hotControl == MyControlId)
+                    {
+                        isDraging = false;
+                        GUIUtility.hotControl = 0;
+                        cursor = MouseCursor.Arrow;
+                        if (!IsPointOnRulerArea(evt.mousePosition))
+                            lines.Add(dragingLine);
+                    }
                     break;
                 case EventType.MouseMove:
                     if (IsPointOverLines(out line, evt.mousePosition))
-                        cursor = MouseCursor.Pan;
+                        cursor = cursor = line.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                     else
                         cursor = MouseCursor.Arrow;
                     break;
@@ -111,29 +120,34 @@ namespace litefeel.AlignTools
 
         private void DrawLines()
         {
+
             if(isDraging)
-                DrawLine(dragingLine.P1(size), dragingLine.P2(size));
+                DrawLine(dragingLine);
             foreach (var line in lines)
-                DrawLine(line.P1(size), line.P2(size));
+                DrawLine(line);
         }
 
-        private void DrawLine(Vector2 start, Vector2 end)
+        private void DrawLine(Line line)
         {
-            var p1 = Gui2World(start, sceneCamera);
-            var p2 = Gui2World(end, sceneCamera);
+            var p = World2Gui(new Vector3(line.p, line.p));
+            var start = line.isH ? new Vector2(0, p.y) : new Vector2(p.x, 0);
+            var end = line.isH ? new Vector2(size.x, p.y) : new Vector2(p.x, size.y);
+            var p1 = Gui2World(start);
+            var p2 = Gui2World(end);
+            Handles.color = Color.blue;
             Handles.DrawLine(p1, p2);
         }
 
-        private bool IsPointOnRulerArea(Vector2 pos)
+        private bool IsPointOnRulerArea(Vector2 uiPos)
         {
-            return pos.x < RULER_SIZE || pos.y < RULER_SIZE;
+            return uiPos.x < RULER_SIZE || uiPos.y < RULER_SIZE;
         }
 
-        private bool IsPointOverLines(out Line line, Vector2 pos)
+        private bool IsPointOverLines(out Line line, Vector2 uiPos)
         {
             foreach(var l in lines)
             {
-                if (IsPointOverLine(l, pos))
+                if (IsPointOverLine(l, uiPos))
                 {
                     line = l;
                     return true;
@@ -143,10 +157,13 @@ namespace litefeel.AlignTools
             return false;
         }
 
-        private bool IsPointOverLine(Line line, Vector2 pos)
+        private bool IsPointOverLine(Line line, Vector2 uiPos)
         {
-            var p = line.isH ? pos.y : pos.x;
-            return Mathf.Abs(p - line.p) < 3;
+            var p = World2Gui(new Vector3(line.p, line.p));
+            if (line.isH)
+                return Mathf.Abs(p.y - uiPos.y) < 3;
+            else
+                return Mathf.Abs(p.x - uiPos.x) < 3;
         }
 
         private void DrawTexture(Vector2 size)
@@ -155,12 +172,18 @@ namespace litefeel.AlignTools
             GUI.DrawTexture(new Rect(Vector2.zero, size), texture, ScaleMode.StretchToFill);
         }
 
-        private Vector3 Gui2World(Vector2 uiPos, Camera camera)
+        private Vector3 Gui2World(Vector2 uiPos)
         {
             uiPos.y = size.y-uiPos.y - 20;
             uiPos.x = Mathf.Clamp(uiPos.x, 0, size.x);
             uiPos.y = Mathf.Clamp(uiPos.y, 0, size.y);
-            return camera.ScreenToWorldPoint(new Vector3(uiPos.x, uiPos.y, 500));
+            return sceneCamera.ScreenToWorldPoint(new Vector3(uiPos.x, uiPos.y, 500));
+        }
+        private Vector2 World2Gui(Vector3 wpos)
+        {
+            var uiPos = sceneCamera.WorldToScreenPoint(wpos);
+            uiPos.y = size.y - uiPos.y - 20;
+            return uiPos;
         }
     }
 }
