@@ -10,6 +10,8 @@ namespace litefeel.AlignTools
 
         private static object editorPath;
 
+        private Ruler _ruler;
+
         // Update the editor window when user changes something (mainly useful when selecting objects)
         void OnInspectorUpdate()
         {
@@ -18,9 +20,6 @@ namespace litefeel.AlignTools
 
         private void OnGUI()
         {
-            if (editorPath == null)
-                editorPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
-            
             EditorGUILayout.BeginHorizontal();
             DrawButton("align_left", AlignTools.AlignLeft, "Align Left");
             DrawButton("align_center_h", AlignTools.AlignCenterH, "Align Center by Horizontal");
@@ -51,6 +50,15 @@ namespace litefeel.AlignTools
 
             DrawLine();
             Settings.AdjustPositionByKeyboard = EditorGUILayout.ToggleLeft("Adjust Position By Keyboard", Settings.AdjustPositionByKeyboard);
+            DrawLine();
+            if (null == _ruler) _ruler = new Ruler();
+            EditorGUI.BeginChangeCheck();
+            Settings.ShowRuler = EditorGUILayout.ToggleLeft("Show Ruler", Settings.ShowRuler);
+            if(EditorGUI.EndChangeCheck())
+            {
+                SceneView.RepaintAll();
+            }
+            
 
             AdjustPosition.Execute();
         }
@@ -64,21 +72,17 @@ namespace litefeel.AlignTools
         private void DrawButton(string iconName, System.Action action, string tooltip = null)
         {
             if (null == btnContent) btnContent = new GUIContent();
-            btnContent.image = LoadIcon(iconName);
+            btnContent.image = Utils.LoadTexture(iconName);
             btnContent.tooltip = tooltip;
             if (GUILayout.Button(btnContent, GUILayout.ExpandWidth(false)))
                 action();
         }
-
-        private Texture LoadIcon(string iconName)
-        {
-            var skinName = EditorGUIUtility.isProSkin ? "Dark" : "Light";
-            string path = string.Format("{0}/Icons/{1}/{2}.png", editorPath, skinName, iconName);
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-        }
+        
 
         private void OnEnable()
         {
+            editorPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
+
             SceneView.onSceneGUIDelegate += OnSceneGUI;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
         }
@@ -97,6 +101,8 @@ namespace litefeel.AlignTools
         private void OnSceneGUI(SceneView sceneView)
         {
             AdjustPosition.Execute();
+            if (_ruler != null)
+                _ruler.OnSceneGUI(sceneView);
         }
         
     }

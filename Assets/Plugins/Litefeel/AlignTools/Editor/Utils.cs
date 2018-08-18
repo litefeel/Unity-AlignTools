@@ -8,6 +8,15 @@ namespace litefeel.AlignTools
 {
     internal static class Utils
     {
+        internal static string editorPath = "Assets/Plugins/LiteFeel/AlignTools/Editor";
+        
+        internal static Texture LoadTexture(string textureName)
+        {
+            var skinName = EditorGUIUtility.isProSkin ? "Dark" : "Light";
+            string path = string.Format("{0}/Icons/{1}/{2}.png", editorPath, skinName, textureName);
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+        }
+
         internal static List<RectTransform> GetRectTransforms()
         {
             var arr = Selection.transforms;
