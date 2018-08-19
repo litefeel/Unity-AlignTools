@@ -10,20 +10,6 @@ namespace litefeel.AlignTools
     {
         public bool isH;
         public float p;
-
-        public Vector3 P3
-        {
-            get { return new Vector3(p, p, 0); }
-        }
-
-        public Vector2 P1(Vector2 size)
-        {
-            return isH ? new Vector2(0, p) : new Vector2(p, 0);
-        }
-        public Vector2 P2(Vector2 size)
-        {
-            return isH ? new Vector2(size.x, p) : new Vector2(p, size.y);
-        }
     }
 
     public class Ruler
