@@ -33,10 +33,14 @@ namespace litefeel.AlignTools
         private Vector2 size;
         private Camera sceneCamera;
         const float RULER_SIZE = 20;
-        private int MY_CONTROLE_HINT = typeof(Ruler).GetHashCode();
+        private int _myControlId = 0;
         private int MyControlId
         {
-            get { return  GUIUtility.GetControlID(MY_CONTROLE_HINT, FocusType.Passive); }
+            get {
+                if (0 == _myControlId)
+                    _myControlId = GUIUtility.GetControlID(typeof(Ruler).GetHashCode(), FocusType.Passive);
+                return _myControlId;
+            }
         }
 
         private bool isDraging = false;
@@ -66,7 +70,7 @@ namespace litefeel.AlignTools
             switch (evt.type)
             {
                 case EventType.MouseDrag:
-                    if(evt.button == 0 && GUIUtility.hotControl == MyControlId)
+                    if (evt.button == 0 && GUIUtility.hotControl == MyControlId)
                     {
                         isDraging = true;
                         var p = Gui2World(evt.mousePosition);
@@ -77,13 +81,15 @@ namespace litefeel.AlignTools
                 case EventType.MouseDown:
                     if (evt.button == 0)
                     {
-                        if (IsPointOnRulerArea(evt.mousePosition))
+                        var mousePos = evt.mousePosition;
+                        if (IsPointOnRulerArea(mousePos))
                         {
                             dragingLine.isH = evt.mousePosition.x > evt.mousePosition.y;
                             GUIUtility.hotControl = MyControlId;
                             cursor = dragingLine.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                             evt.Use();
-                        }else if (IsPointOverLines(out line, evt.mousePosition))
+                        }
+                        else if (IsPointOverLines(out line, mousePos))
                         {
                             GUIUtility.hotControl = MyControlId;
                             dragingLine = line;
@@ -111,7 +117,7 @@ namespace litefeel.AlignTools
                         cursor = MouseCursor.Arrow;
                     break;
             }
-            
+
             if (cursor != MouseCursor.Arrow)
                 EditorGUIUtility.AddCursorRect(new Rect(Vector2.zero, size), cursor);
 
