@@ -124,7 +124,7 @@ namespace litefeel.AlignTools
             var end = line.isH ? new Vector2(size.x, p.y) : new Vector2(p.x, size.y);
             var p1 = Gui2World(start);
             var p2 = Gui2World(end);
-            Handles.color = Color.blue;
+            Handles.color = Settings.RulerLineColor;
             Handles.DrawLine(p1, p2);
         }
 

@@ -52,13 +52,19 @@ namespace litefeel.AlignTools
             if (null == _ruler) _ruler = new Ruler();
             EditorGUI.BeginChangeCheck();
             Settings.ShowRuler = EditorGUILayout.ToggleLeft("Show Ruler", Settings.ShowRuler);
-            if(EditorGUI.EndChangeCheck())
+            var needPepaintScene = EditorGUI.EndChangeCheck();
+
+            if(Settings.ShowRuler)
             {
-                SceneView.RepaintAll();
+                EditorGUI.BeginChangeCheck();
+                Settings.RulerLineColor = EditorGUILayout.ColorField("Ruler Line Color", Settings.RulerLineColor);
+                needPepaintScene = EditorGUI.EndChangeCheck() || needPepaintScene;
             }
             
 
             AdjustPosition.Execute();
+            if (needPepaintScene)
+                SceneView.RepaintAll();
         }
 
         private void DrawLine()

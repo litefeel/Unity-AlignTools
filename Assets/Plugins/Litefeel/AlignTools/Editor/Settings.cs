@@ -9,13 +9,20 @@ namespace litefeel.AlignTools
     {
         private const string AdjustPositionByKeyboardKey = "litefeel.AlignTools.AdjustPositionByKeyboard";
         private const string ShowRulerKey = "litefeel.AlignTools.ShowRuler";
-
-
+        private const string RulerLineColorKey = "litefeel.AlignTools.RulerLineColor";
+        
+        
         [InitializeOnLoadMethod]
         private static void Init()
         {
             _AdjustPositionByKeyboard = EditorPrefs.GetBool(AdjustPositionByKeyboardKey, false);
             _ShowRuler = EditorPrefs.GetBool(ShowRulerKey, false);
+
+            var ruleLineColorStr = EditorPrefs.GetString(RulerLineColorKey, null);
+            var ruleLineColor = Color.white;
+            if (!ColorUtility.TryParseHtmlString(ruleLineColorStr, out ruleLineColor))
+                ruleLineColor = Color.white;
+            _RulerLineColor = ruleLineColor;
         }
 
         private static bool _AdjustPositionByKeyboard;
@@ -46,6 +53,19 @@ namespace litefeel.AlignTools
             }
         }
 
+        private static Color _RulerLineColor;
+        public static Color RulerLineColor
+        {
+            get { return _RulerLineColor; }
+            set
+            {
+                if(value != _RulerLineColor)
+                {
+                    _RulerLineColor = value;
+                    EditorPrefs.SetString(RulerLineColorKey, "#" + ColorUtility.ToHtmlStringRGBA(value));
+                }
+            }
+        }
     }
 }
 
