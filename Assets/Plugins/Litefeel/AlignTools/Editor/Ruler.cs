@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +19,8 @@ namespace litefeel.AlignTools
         private int _myControlId = 0;
         private int MyControlId
         {
-            get {
+            get
+            {
                 if (0 == _myControlId)
                     _myControlId = GUIUtility.GetControlID(typeof(Ruler).GetHashCode(), FocusType.Passive);
                 return _myControlId;
@@ -111,7 +110,7 @@ namespace litefeel.AlignTools
         private void DrawLines()
         {
 
-            if(isDraging)
+            if (isDraging)
                 DrawLine(dragingLine);
             foreach (var line in lines)
                 DrawLine(line);
@@ -135,7 +134,7 @@ namespace litefeel.AlignTools
 
         private bool IsPointOverLines(out Line line, Vector2 uiPos)
         {
-            foreach(var l in lines)
+            foreach (var l in lines)
             {
                 if (IsPointOverLine(l, uiPos))
                 {

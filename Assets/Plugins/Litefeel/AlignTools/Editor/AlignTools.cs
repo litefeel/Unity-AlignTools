@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace litefeel.AlignTools
 {
@@ -144,12 +143,13 @@ namespace litefeel.AlignTools
                     v = calcValue(corners, 0 == i, ref minV, ref maxV)
                 });
             };
-            vlist.Sort((a, b)=>{
+            vlist.Sort((a, b) =>
+            {
                 if (a.v < b.v) return -1;
                 else if (a.v > b.v) return 1;
                 return 0;
             });
-            
+
             float gap = (maxV - minV) / (list.Count - 1);
             for (var i = 1; i < vlist.Count - 1; i++)
             {
@@ -185,7 +185,8 @@ namespace litefeel.AlignTools
                     size = size,
                 });
             };
-            vlist.Sort((a, b) => {
+            vlist.Sort((a, b) =>
+            {
                 if (a.v < b.v) return -1;
                 else if (a.v > b.v) return 1;
                 return 0;

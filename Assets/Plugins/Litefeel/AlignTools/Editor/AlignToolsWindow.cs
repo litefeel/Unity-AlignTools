@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,13 +52,13 @@ namespace litefeel.AlignTools
             Settings.ShowRuler = EditorGUILayout.ToggleLeft("Show Ruler", Settings.ShowRuler);
             var needPepaintScene = EditorGUI.EndChangeCheck();
 
-            if(Settings.ShowRuler)
+            if (Settings.ShowRuler)
             {
                 EditorGUI.BeginChangeCheck();
                 Settings.RulerLineColor = EditorGUILayout.ColorField("Ruler Line Color", Settings.RulerLineColor);
                 needPepaintScene = EditorGUI.EndChangeCheck() || needPepaintScene;
             }
-            
+
 
             AdjustPosition.Execute();
             if (needPepaintScene)
@@ -81,7 +79,7 @@ namespace litefeel.AlignTools
             if (GUILayout.Button(btnContent, GUILayout.ExpandWidth(false)))
                 action();
         }
-        
+
 
         private void OnEnable()
         {
@@ -101,14 +99,14 @@ namespace litefeel.AlignTools
         {
             AdjustPosition.Execute();
         }
-        
+
         private void OnSceneGUI(SceneView sceneView)
         {
             AdjustPosition.Execute();
             if (_ruler != null)
                 _ruler.OnSceneGUI(sceneView);
         }
-        
+
     }
 }
 

@@ -1,15 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
-using System;
+using UnityEngine;
 
 namespace litefeel.AlignTools
 {
     internal static class Utils
     {
         internal static string editorPath = "Assets/Plugins/LiteFeel/AlignTools/Editor";
-        
+
         internal static Texture LoadTexture(string textureName)
         {
             var skinName = EditorGUIUtility.isProSkin ? "Dark" : "Light";

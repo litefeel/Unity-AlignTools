@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace litefeel.AlignTools
 {
@@ -10,8 +8,8 @@ namespace litefeel.AlignTools
         private const string AdjustPositionByKeyboardKey = "litefeel.AlignTools.AdjustPositionByKeyboard";
         private const string ShowRulerKey = "litefeel.AlignTools.ShowRuler";
         private const string RulerLineColorKey = "litefeel.AlignTools.RulerLineColor";
-        
-        
+
+
         [InitializeOnLoadMethod]
         private static void Init()
         {
@@ -59,7 +57,7 @@ namespace litefeel.AlignTools
             get { return _RulerLineColor; }
             set
             {
-                if(value != _RulerLineColor)
+                if (value != _RulerLineColor)
                 {
                     _RulerLineColor = value;
                     EditorPrefs.SetString(RulerLineColorKey, "#" + ColorUtility.ToHtmlStringRGBA(value));
