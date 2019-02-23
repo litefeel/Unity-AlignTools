@@ -166,16 +166,14 @@ namespace litefeel.AlignTools
 
         private Vector3 Gui2World(Vector2 uiPos)
         {
-            uiPos.y = size.y-uiPos.y - 20;
-            uiPos.x = Mathf.Clamp(uiPos.x, 0, size.x);
-            uiPos.y = Mathf.Clamp(uiPos.y, 0, size.y);
-            return sceneCamera.ScreenToWorldPoint(new Vector3(uiPos.x, uiPos.y, 500));
+            var ray = HandleUtility.GUIPointToWorldRay(uiPos);
+            var pos = ray.origin;
+            pos.z = 500;
+            return pos;
         }
         private Vector2 World2Gui(Vector3 wpos)
         {
-            var uiPos = sceneCamera.WorldToScreenPoint(wpos);
-            uiPos.y = size.y - uiPos.y - 20;
-            return uiPos;
+            return HandleUtility.WorldToGUIPoint(wpos);
         }
     }
 }
