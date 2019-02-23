@@ -17,7 +17,6 @@ namespace litefeel.AlignTools
 
         private MouseCursor cursor = MouseCursor.Arrow;
         private Vector2 size;
-        private Camera sceneCamera;
         const float RULER_SIZE = 20;
         private int _myControlId = 0;
         private int MyControlId
@@ -39,7 +38,6 @@ namespace litefeel.AlignTools
         {
             if (!Settings.ShowRuler) return;
             if (!sceneView.in2DMode) return;
-            sceneCamera = sceneView.camera;
 
             size = sceneView.position.size;
 
@@ -98,7 +96,7 @@ namespace litefeel.AlignTools
                     break;
                 case EventType.MouseMove:
                     if (IsPointOverLines(out line, evt.mousePosition))
-                        cursor = cursor = line.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
+                        cursor = line.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                     else
                         cursor = MouseCursor.Arrow;
                     break;

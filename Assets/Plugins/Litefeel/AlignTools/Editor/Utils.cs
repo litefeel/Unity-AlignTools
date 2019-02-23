@@ -33,7 +33,7 @@ namespace litefeel.AlignTools
         internal static void WorldCorners(this RectTransform rt, Vector3[] corners)
         {
             rt.GetWorldCorners(corners);
-            var p1 = corners[0];
+            //var p1 = corners[0];
             if (corners[0].x > corners[3].x)
                 Swap(ref corners[0], ref corners[3]);
             if (corners[1].x > corners[2].x)
