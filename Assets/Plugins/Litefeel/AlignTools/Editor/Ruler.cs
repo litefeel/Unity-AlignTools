@@ -29,6 +29,7 @@ namespace litefeel.AlignTools
 
         private bool isDraging = false;
 
+        private int _MouseOverLineIdx = -1;
         private Line dragingLine;
         private List<Line> lines = new List<Line>();
 
@@ -49,7 +50,7 @@ namespace litefeel.AlignTools
 
             DrawLines();
 
-            Line line;
+            int idx;
             switch (evt.type)
             {
                 case EventType.MouseDrag:
@@ -72,12 +73,12 @@ namespace litefeel.AlignTools
                             cursor = dragingLine.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
                             evt.Use();
                         }
-                        else if (IsPointOverLines(out line, mousePos))
+                        else if (IsPointOverLines(out idx, mousePos))
                         {
                             GUIUtility.hotControl = MyControlId;
-                            dragingLine = line;
+                            dragingLine = lines[idx];
                             cursor = dragingLine.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
-                            lines.Remove(line);
+                            lines.RemoveAt(idx);
                             isDraging = true;
                             evt.Use();
                         }
@@ -90,14 +91,22 @@ namespace litefeel.AlignTools
                         GUIUtility.hotControl = 0;
                         cursor = MouseCursor.Arrow;
                         if (!IsPointOnRulerArea(evt.mousePosition))
+                        {
+                            _MouseOverLineIdx = lines.Count;
                             lines.Add(dragingLine);
+                        }
                     }
                     break;
                 case EventType.MouseMove:
-                    if (IsPointOverLines(out line, evt.mousePosition))
+                    if (IsPointOverLines(out _MouseOverLineIdx, evt.mousePosition))
+                    {
+                        var line = lines[_MouseOverLineIdx];
                         cursor = line.isH ? MouseCursor.ResizeVertical : MouseCursor.ResizeHorizontal;
+                    }
                     else
+                    {
                         cursor = MouseCursor.Arrow;
+                    }
                     break;
             }
 
@@ -109,21 +118,23 @@ namespace litefeel.AlignTools
 
         private void DrawLines()
         {
-
             if (isDraging)
-                DrawLine(dragingLine);
-            foreach (var line in lines)
-                DrawLine(line);
+                DrawLine(dragingLine, Color.white);
+            for (var i = lines.Count - 1; i >= 0; --i)
+                DrawLine(lines[i], i == _MouseOverLineIdx ? Color.red : Settings.RulerLineColor);
         }
 
-        private void DrawLine(Line line)
+        private void DrawLine(Line line, Color color)
         {
             var p = World2Gui(new Vector3(line.p, line.p));
             var start = line.isH ? new Vector2(0, p.y) : new Vector2(p.x, 0);
             var end = line.isH ? new Vector2(size.x, p.y) : new Vector2(p.x, size.y);
             var p1 = Gui2World(start);
             var p2 = Gui2World(end);
-            Handles.color = Settings.RulerLineColor;
+
+
+
+            Handles.color = color;
             Handles.DrawLine(p1, p2);
         }
 
@@ -132,17 +143,17 @@ namespace litefeel.AlignTools
             return uiPos.x < RULER_SIZE || uiPos.y < RULER_SIZE;
         }
 
-        private bool IsPointOverLines(out Line line, Vector2 uiPos)
+        private bool IsPointOverLines(out int idx, Vector2 uiPos)
         {
-            foreach (var l in lines)
+            for (var i = lines.Count - 1; i >= 0; --i)
             {
-                if (IsPointOverLine(l, uiPos))
+                if (IsPointOverLine(lines[i], uiPos))
                 {
-                    line = l;
+                    idx = i;
                     return true;
                 }
             }
-            line = new Line();
+            idx = -1;
             return false;
         }
 
