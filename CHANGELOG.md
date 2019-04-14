@@ -1,3 +1,8 @@
+v1.4.0 - 2019-04-14
+- Added Support Ruler line status
+- Added Support Custom rule line color
+- Fixed Incorrect ruler line position
+
 v1.3 - 2018-10-04
 - Added Ruler
 - Fixed distribute by gap 
