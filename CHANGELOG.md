@@ -1,3 +1,7 @@
+v1.5.0 - 2019-05-02
+- Added Support Shortcuts of Unity 2019
+- Changed Change menu path to `Window/LiteFeel/Align Tools`
+
 v1.4.0 - 2019-04-14
 - Added Support Ruler line status
 - Added Support Custom rule line color
