@@ -80,15 +80,26 @@ namespace litefeel.AlignTools
         private static void AlignUI(CalcValueOne calcValue, ApplyValue applyValue)
         {
             var list = Utils.GetRectTransforms();
-            if (list.Count < 2) return;
+            if (list.Count < 1) return;
 
             float v = 0f;
             Vector3[] corners = new Vector3[4];
-            for (var i = 0; i < list.Count; i++)
+            if (list.Count == 1)
             {
-                list[i].GetWorldCorners(corners);
-                calcValue(corners, 0 == i, ref v);
+                var parent = list[0].parent as RectTransform;
+                if (parent == null) return;
+                parent.GetWorldCorners(corners);
+                calcValue(corners, true, ref v);
             }
+            else
+            {
+                for (var i = 0; i < list.Count; i++)
+                {
+                    list[i].GetWorldCorners(corners);
+                    calcValue(corners, 0 == i, ref v);
+                }
+            }
+
             foreach (var rt in list)
             {
                 var pos = applyValue(rt, v);
@@ -100,15 +111,26 @@ namespace litefeel.AlignTools
         private static void AlignCenterUI(CalcValueTwo calcValue, ApplyValue applyValue)
         {
             var list = Utils.GetRectTransforms();
-            if (list.Count < 2) return;
+            if (list.Count < 1) return;
 
             float minV = 0f, maxV = 0f;
             Vector3[] corners = new Vector3[4];
-            for (var i = 0; i < list.Count; i++)
+            if (list.Count == 1)
             {
-                list[i].GetWorldCorners(corners);
-                calcValue(corners, 0 == i, ref minV, ref maxV);
+                var parent = list[0].parent as RectTransform;
+                if (parent == null) return;
+                parent.GetWorldCorners(corners);
+                calcValue(corners, true, ref minV, ref maxV);
             }
+            else
+            {
+                for (var i = 0; i < list.Count; i++)
+                {
+                    list[i].GetWorldCorners(corners);
+                    calcValue(corners, 0 == i, ref minV, ref maxV);
+                }
+            }
+
             float v = (minV + maxV) * 0.5f;
             foreach (var rt in list)
             {
