@@ -165,12 +165,7 @@ namespace litefeel.AlignTools
                     v = calcValue(corners, 0 == i, ref minV, ref maxV)
                 });
             };
-            vlist.Sort((a, b) =>
-            {
-                if (a.v < b.v) return -1;
-                else if (a.v > b.v) return 1;
-                return 0;
-            });
+            vlist.Sort(SortByHierarchy);
 
             float gap = (maxV - minV) / (list.Count - 1);
             for (var i = 1; i < vlist.Count - 1; i++)
@@ -207,16 +202,21 @@ namespace litefeel.AlignTools
                     size = size,
                 });
             };
-            vlist.Sort((a, b) =>
+            Debug.Log("============= befor sort");
+            foreach (var v in vlist)
             {
-                if (a.v < b.v) return -1;
-                else if (a.v > b.v) return 1;
-                return 0;
-            });
+                Debug.Log(v.rt.name);
+            }
+            vlist.Sort(SortByHierarchy);
+            Debug.Log("------------ end sort");
+            foreach (var v in vlist)
+            {
+                Debug.Log(v.rt.name);
+            }
 
             float gap = (maxV - minV - sumSize) / (list.Count - 1);
-            float curV = minV + vlist[0].size + gap;
-            for (var i = 1; i < vlist.Count - 1; i++)
+            float curV = minV;
+            for (var i = 0; i < vlist.Count; i++)
             {
                 var rt = vlist[i].rt;
                 var pos = applyValue(rt, curV + vlist[i].size / 2);
@@ -453,6 +453,53 @@ namespace litefeel.AlignTools
             return new Vector3(v, v, v);
         }
         #endregion
+
+
+        private static int SortByPosition(Value a, Value b)
+        {
+            if (Mathf.Approximately(a.v, b.v)) return 0;
+            if (a.v < b.v) return -1;
+            else if (a.v > b.v) return 1;
+            return 0;
+        }
+
+        private static Dictionary<Transform, int> s_Sets = new Dictionary<Transform, int>();
+        private static int SortByHierarchy(Value a, Value b)
+        {
+            // 是否兄弟节点
+            if (a.rt.parent == b.rt.parent)
+                return b.rt.GetSiblingIndex() - a.rt.GetSiblingIndex();
+
+            // 是否非跟节点
+            var rootA = a.rt.root;
+            var rootB = b.rt.root;
+            if (rootA != rootB)
+                return rootB.GetSiblingIndex() - rootA.GetSiblingIndex();
+
+            s_Sets.Clear();
+            int siblingIndx = -1;
+            Transform transA = a.rt;
+            do
+            {
+                s_Sets.Add(transA, siblingIndx);
+                siblingIndx = transA.GetSiblingIndex();
+                transA = transA.parent;
+            } while (transA != null);
+
+
+            Transform transB = b.rt;
+            while (transB != null)
+            {
+                if (s_Sets.TryGetValue(transB.parent, out siblingIndx))
+                {
+                    s_Sets.Clear();
+                    return transB.GetSiblingIndex() - siblingIndx;
+                }
+                transB = transB.parent;
+            }
+            s_Sets.Clear();
+            return 0;
+        }
 
     }
 }
