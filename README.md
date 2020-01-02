@@ -2,7 +2,6 @@
 
 
 [![Build Status](https://travis-ci.org/litefeel/Unity-AlignTools.svg?branch=master)](https://travis-ci.org/litefeel/Unity-AlignTools)
-[![Join the chat at https://gitter.im/litefeel/Unity-AlignTools](https://badges.gitter.im/litefeel/Unity-AlignTools.svg)](https://gitter.im/litefeel/Unity-AlignTools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![](https://img.shields.io/github/release/litefeel/Unity-AlignTools.svg?label=latest%20version)](https://github.com/litefeel/Unity-AlignTools/releases)
 [![](https://img.shields.io/github/license/litefeel/Unity-AlignTools.svg)](https://github.com/litefeel/Unity-AlignTools/blob/upm/LICENSE.md)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/litefeel)
