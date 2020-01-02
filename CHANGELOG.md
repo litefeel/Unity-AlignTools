@@ -1,3 +1,8 @@
+#### v1.6.0 - 2020-01-03
+- Added Align object to parent when only one object is selected
+- Changed Sort object by hierarchy
+- Changed Update menu item and shortcut
+
 #### v1.5.1 - 2019-05-19
 - Fixed warning on unity 2019
 
