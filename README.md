@@ -34,16 +34,24 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 #### Using .zip file (for Unity 5.0+)
 
 1. Download `Source code` from [Releases](https://github.com/litefeel/Unity-AlignTools/releases)
-2. Extract the package into your Unity project
+2. Extract the package into  `$UnityProject/Packages` or `$UnityProject/Assets/Plugins`
 
 
-## How to use?
+#### How to use?
 
-1. Select `Edit > Preferences… > Open Files With Default App` from the menu
-2. Input the file extensions, like txt
-3. Double click txt file, will open it with default application
+1. Open Windows from [Windows] > [LiteFeel] > [Align Tools] > [Align Tools]
+2. Select two or more GUI object
+3. Align them
 
+#### Adjust position by keyboard
 
+1. Toggle on Menu item `Adjust Position By Keyboard` at `Window/LiteFeel/Align Tools/Align Tools`
+2. Select one or more ui object
+3. Press the arrow keys (Options Press Ctrl)
+
+#### Screenshots
+
+![](Documentation~/Images/screenshots.png)
 
 ## Support
 

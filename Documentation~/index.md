@@ -4,7 +4,7 @@ https://www.litefeel.com
 Twitter: @litefeel  
 Github: https://github.com/litefeel/Unity-AlignTools
 
-_________
+
 #### What does it do ?
 
 This editor window allows you to easily align ui objects on your scene :
@@ -14,24 +14,19 @@ This editor window allows you to easily align ui objects on your scene :
 - expand/shrink size of ui by another
 - adjust position of ui by arrow keyboard
 
-____
-#### Usage
+#### How to use?
 
-1. Open Windows from `Window > LiteFeel > Align Tools`
+1. Open Windows from [Windows] > [LiteFeel] > [Align Tools] > [Align Tools]
 2. Select two or more GUI object
 3. Align them
 
-____
 #### Adjust position by keyboard
 
-1. Toggle on `Adjust Position By Keyboard` at `Align Tools Window`
+1. Toggle on Menu item `Adjust Position By Keyboard` at `Window/LiteFeel/Align Tools/Align Tools`
 2. Select one or more ui object
-3. Press the arrow keys (Options Press Shift)
+3. Press the arrow keys (Options Press Ctrl)
 
 
 #### Screenshots
 
 ![](Images/screenshots.png)
-
-
-![](Images/shortcuts.png)
