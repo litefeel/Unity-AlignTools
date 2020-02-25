@@ -4,21 +4,13 @@ using UnityEngine;
 
 namespace litefeel.AlignTools
 {
-    enum AlignType
-    {
-        LEFT,
-        TOP,
-        RIGHT,
-        BOTTOM
-    }
-
-    delegate void CalcValueOne(Vector3[] corners, bool isFirst, ref float v);
-    delegate float CalcValueTwo(Vector3[] corners, bool isFirst, ref float minV, ref float maxV);
-    delegate float CalcSize(Vector3[] corners, out float minV, out float maxV);
-    delegate Vector3 ApplyValue(RectTransform rt, float v);
-
     public class AlignTools
     {
+        delegate void CalcValueOne(Vector3[] corners, bool isFirst, ref float v);
+        delegate float CalcValueTwo(Vector3[] corners, bool isFirst, ref float minV, ref float maxV);
+        delegate float CalcSize(Vector3[] corners, out float minV, out float maxV);
+        delegate Vector3 ApplyValue(RectTransform rt, float v);
+
         public static void AlignLeft()
         {
             AlignUI(CalcValueLeft, ApplyValueLeft);

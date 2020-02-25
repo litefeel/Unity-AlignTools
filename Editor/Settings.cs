@@ -3,11 +3,18 @@ using UnityEngine;
 
 namespace litefeel.AlignTools
 {
+    public enum OperatorMode : int
+    {
+        UGUI,
+        World,
+    }
     public static class Settings
     {
         private const string AdjustPositionByKeyboardKey = "litefeel.AlignTools.AdjustPositionByKeyboard";
         private const string ShowRulerKey = "litefeel.AlignTools.ShowRuler";
         private const string RulerLineColorKey = "litefeel.AlignTools.RulerLineColor";
+        private const string OperatorModeKey = "litefeel.AlignTools.OperatorModeKey";
+        
 
 
         [InitializeOnLoadMethod]
@@ -21,6 +28,7 @@ namespace litefeel.AlignTools
             if (!ColorUtility.TryParseHtmlString(ruleLineColorStr, out ruleLineColor))
                 ruleLineColor = Color.white;
             _RulerLineColor = ruleLineColor;
+            _OperatorMode = (OperatorMode)EditorPrefs.GetInt(OperatorModeKey, (int)OperatorMode.UGUI);
         }
 
         private static bool _AdjustPositionByKeyboard;
@@ -64,6 +72,27 @@ namespace litefeel.AlignTools
                 }
             }
         }
+
+        private static OperatorMode _OperatorMode;
+
+        public static OperatorMode OperatorMode
+        {
+            get { return _OperatorMode; }
+            set
+            {
+                if (value != _OperatorMode)
+                {
+                    _OperatorMode = value;
+                    EditorPrefs.SetInt(OperatorModeKey, (int)value);
+                }
+            }
+        }
+        public static int OperatorModeInt
+        {
+            get { return (int)OperatorMode; }
+            set { OperatorMode = (OperatorMode)value; }
+        }
+
     }
 }
 

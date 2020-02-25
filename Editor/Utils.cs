@@ -28,6 +28,19 @@ namespace litefeel.AlignTools
             return list;
         }
 
+        internal static List<Transform> GetWorldTransforms()
+        {
+            var arr = Selection.transforms;
+            var list = new List<Transform>();
+            foreach (var trans in arr)
+            {
+                var rt = trans as RectTransform;
+                if (rt) continue;
+                list.Add(trans);
+            }
+            return list;
+        }
+
         internal static void WorldCorners(this RectTransform rt, Vector3[] corners)
         {
             rt.GetWorldCorners(corners);
