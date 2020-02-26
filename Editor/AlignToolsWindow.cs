@@ -90,26 +90,26 @@ namespace litefeel.AlignTools
         private void ShowWorldMode()
         {
             EditorGUILayout.BeginHorizontal();
-            DrawButton("align_left", AlignToolsWorld.AlignToMin, AXIS_X, "Align Left");
-            DrawButton("align_center_h", AlignToolsWorld.AlignToCenter, AXIS_X, "Align Center by Horizontal");
-            DrawButton("align_right", AlignToolsWorld.AlignToMax, AXIS_X, "Align Right");
+            DrawButton("align_left", AlignToolsWorld.AlignToMin, AXIS_X, "Align Min by Axis X");
+            DrawButton("align_center_h", AlignToolsWorld.AlignToCenter, AXIS_X, "Align Center by Axis X");
+            DrawButton("align_right", AlignToolsWorld.AlignToMax, AXIS_X, "Align Max by Axis X");
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("align_top", AlignToolsWorld.AlignToMax, AXIS_Y, "Align Top");
-            DrawButton("align_center_v", AlignToolsWorld.AlignToCenter, AXIS_Y, "Align Center by Vertical");
-            DrawButton("align_bottom", AlignToolsWorld.AlignToMin, AXIS_Y, "Align Bottom");
+            DrawButton("align_top", AlignToolsWorld.AlignToMax, AXIS_Y, "Align Min by Axis Y");
+            DrawButton("align_center_v", AlignToolsWorld.AlignToCenter, AXIS_Y, "Align Center by Axis Y");
+            DrawButton("align_bottom", AlignToolsWorld.AlignToMin, AXIS_Y, "Align Max by Axis Y");
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("align_top", AlignToolsWorld.AlignToMax, AXIS_Z, "Align Top");
-            DrawButton("align_center_v", AlignToolsWorld.AlignToCenter, AXIS_Z, "Align Center by Vertical");
-            DrawButton("align_bottom", AlignToolsWorld.AlignToMin, AXIS_Z, "Align Bottom");
+            DrawButton("align_max_z", AlignToolsWorld.AlignToMax, AXIS_Z, "Align Min by Axis Z");
+            DrawButton("align_center_z", AlignToolsWorld.AlignToCenter, AXIS_Z, "Align Center by Axis Z");
+            DrawButton("align_min_z", AlignToolsWorld.AlignToMin, AXIS_Z, "Align Max by Axis Z");
             EditorGUILayout.EndHorizontal();
 
             DrawLine();
             EditorGUILayout.BeginHorizontal();
-            DrawButton("distribution_h", AlignToolsWorld.Distribution, AXIS_X, "Distribute by Horizontal");
-            DrawButton("distribution_v", AlignToolsWorld.Distribution, AXIS_Y, "Distribute by Vertical");
-            DrawButton("distribution_v", AlignToolsWorld.Distribution, AXIS_Z, "Distribute by Vertical");
+            DrawButton("distribution_h", AlignToolsWorld.Distribution, AXIS_X, "Distribute by Axis X");
+            DrawButton("distribution_v", AlignToolsWorld.Distribution, AXIS_Y, "Distribute by Axis Y");
+            DrawButton("distribution_z", AlignToolsWorld.Distribution, AXIS_Z, "Distribute by Axis Z");
             EditorGUILayout.EndHorizontal();
 
             //DrawLine();
