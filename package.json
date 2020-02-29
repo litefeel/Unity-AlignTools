@@ -1,7 +1,7 @@
 {
     "name": "com.litefeel.aligntools",
     "displayName": "AlignTools",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "unity": "2018.2",
     "description": "Align Tools is just perfect Unity asset plugin to align gui object.",
     "keywords": [
