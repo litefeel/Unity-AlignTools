@@ -1,3 +1,6 @@
+#### v1.7.0 - 2020-02-29
+- Support align 3d object
+
 #### v1.6.0 - 2020-01-03
 - Added Align object to parent when only one object is selected
 - Changed Sort object by hierarchy
