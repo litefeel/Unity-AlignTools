@@ -6,14 +6,14 @@
 [![](https://img.shields.io/github/license/litefeel/Unity-AlignTools.svg)](https://github.com/litefeel/Unity-AlignTools/blob/upm/LICENSE.md)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/litefeel)
 
-[Align Tools][AlignTools] is just perfect Unity asset plugin to align gui object.  
+[Align Tools][AlignTools] is just perfect Unity asset plugin to align game object.  
 
 ## Feature list
 
 - Free
-- Align GUI object
+- Align game object
 - Distribute GUI object
-- Tested with Unity 5.x and 2017
+- Tested with Unity 2018 and 2019 
 - No runtime resources required
 - No scripting required
 

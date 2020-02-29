@@ -8,11 +8,11 @@ Github: https://github.com/litefeel/Unity-AlignTools
 #### What does it do ?
 
 This editor window allows you to easily align ui objects on your scene :
-- align ui objects on all axis or the one you choose
+- align game objects on all axis or the one you choose
 - align on the left or the right (use renderer extents)
 - distribute objects in equals distances (for position)
 - expand/shrink size of ui by another
-- adjust position of ui by arrow keyboard
+- adjust position of game object by arrow keyboard
 
 #### How to use?
 
