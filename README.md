@@ -1,7 +1,7 @@
 # Align Tools
 
 
-[![Build Status](https://travis-ci.org/litefeel/Unity-AlignTools.svg?branch=master)](https://travis-ci.org/litefeel/Unity-AlignTools)
+[![Test](https://github.com/litefeel/Unity-AlignTools/workflows/Test/badge.svg)](https://github.com/litefeel/Unity-AlignTools/actions)
 [![](https://img.shields.io/github/release/litefeel/Unity-AlignTools.svg?label=latest%20version)](https://github.com/litefeel/Unity-AlignTools/releases)
 [![](https://img.shields.io/github/license/litefeel/Unity-AlignTools.svg)](https://github.com/litefeel/Unity-AlignTools/blob/upm/LICENSE.md)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/litefeel)
