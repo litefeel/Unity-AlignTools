@@ -59,6 +59,8 @@ namespace litefeel.AlignTools
             EditorGUILayout.BeginHorizontal();
             DrawButton("distribution_h", AlignTools.DistributionGapHorizontal, "Distribute by Horizontal");
             DrawButton("distribution_v", AlignTools.DistributionGapVertical, "Distribute by Vertical");
+            EditorGUILayout.LabelField("Order By", GUILayout.Width(60), GUILayout.ExpandWidth(false));
+            Settings.DistributionOrder = (DistributionOrder)EditorGUILayout.EnumPopup(Settings.DistributionOrder);
             EditorGUILayout.EndHorizontal();
 
             DrawLine();
@@ -110,6 +112,8 @@ namespace litefeel.AlignTools
             DrawButton("distribution_h", AlignToolsWorld.Distribution, AXIS_X, "Distribute by Axis X");
             DrawButton("distribution_v", AlignToolsWorld.Distribution, AXIS_Y, "Distribute by Axis Y");
             DrawButton("distribution_z", AlignToolsWorld.Distribution, AXIS_Z, "Distribute by Axis Z");
+            EditorGUILayout.LabelField("Order By", GUILayout.Width(60), GUILayout.ExpandWidth(false));
+            Settings.DistributionOrder = (DistributionOrder)EditorGUILayout.EnumPopup(Settings.DistributionOrder);
             EditorGUILayout.EndHorizontal();
 
             //DrawLine();

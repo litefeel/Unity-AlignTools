@@ -8,12 +8,18 @@ namespace litefeel.AlignTools
         UGUI,
         World,
     }
+    public enum DistributionOrder : int
+    {
+        Position,
+        Hierarchy,
+    }
     public static class Settings
     {
         private const string AdjustPositionByKeyboardKey = "litefeel.AlignTools.AdjustPositionByKeyboard";
         private const string ShowRulerKey = "litefeel.AlignTools.ShowRuler";
         private const string RulerLineColorKey = "litefeel.AlignTools.RulerLineColor";
         private const string OperatorModeKey = "litefeel.AlignTools.OperatorModeKey";
+        private const string DistributionOrderKey = "litefeel.AlignTools.DistributionOrderKey";
         
 
 
@@ -29,6 +35,7 @@ namespace litefeel.AlignTools
                 ruleLineColor = Color.white;
             _RulerLineColor = ruleLineColor;
             _OperatorMode = (OperatorMode)EditorPrefs.GetInt(OperatorModeKey, (int)OperatorMode.UGUI);
+            _DistributionOrder = (DistributionOrder)EditorPrefs.GetInt(DistributionOrderKey, (int)DistributionOrder.Position);
         }
 
         private static bool _AdjustPositionByKeyboard;
@@ -91,6 +98,20 @@ namespace litefeel.AlignTools
         {
             get { return (int)OperatorMode; }
             set { OperatorMode = (OperatorMode)value; }
+        }
+
+        private static DistributionOrder _DistributionOrder;
+        public static DistributionOrder DistributionOrder
+        {
+            get { return _DistributionOrder; }
+            set
+            {
+                if (value != _DistributionOrder)
+                {
+                    _DistributionOrder = value;
+                    EditorPrefs.SetInt(DistributionOrderKey, (int)value);
+                }
+            }
         }
 
     }

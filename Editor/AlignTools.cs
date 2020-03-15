@@ -157,7 +157,10 @@ namespace litefeel.AlignTools
                     v = calcValue(corners, 0 == i, ref minV, ref maxV)
                 });
             };
-            vlist.Sort(SortByHierarchy);
+            if (Settings.DistributionOrder == DistributionOrder.Position)
+                vlist.Sort(SortByPosition);
+            else
+                vlist.Sort(SortByHierarchy);
 
             float gap = (maxV - minV) / (list.Count - 1);
             for (var i = 1; i < vlist.Count - 1; i++)
@@ -194,17 +197,10 @@ namespace litefeel.AlignTools
                     size = size,
                 });
             };
-            Debug.Log("============= befor sort");
-            foreach (var v in vlist)
-            {
-                Debug.Log(v.rt.name);
-            }
-            vlist.Sort(SortByHierarchy);
-            Debug.Log("------------ end sort");
-            foreach (var v in vlist)
-            {
-                Debug.Log(v.rt.name);
-            }
+            if (Settings.DistributionOrder == DistributionOrder.Position)
+                vlist.Sort(SortByPosition);
+            else
+                vlist.Sort(SortByHierarchy);
 
             float gap = (maxV - minV - sumSize) / (list.Count - 1);
             float curV = minV;
@@ -460,13 +456,13 @@ namespace litefeel.AlignTools
         {
             // 是否兄弟节点
             if (a.rt.parent == b.rt.parent)
-                return b.rt.GetSiblingIndex() - a.rt.GetSiblingIndex();
+                return a.rt.GetSiblingIndex() - b.rt.GetSiblingIndex();
 
             // 是否非跟节点
             var rootA = a.rt.root;
             var rootB = b.rt.root;
             if (rootA != rootB)
-                return rootB.GetSiblingIndex() - rootA.GetSiblingIndex();
+                return rootA.GetSiblingIndex() - rootB.GetSiblingIndex();
 
             s_Sets.Clear();
             int siblingIndx = -1;
@@ -485,7 +481,7 @@ namespace litefeel.AlignTools
                 if (s_Sets.TryGetValue(transB.parent, out siblingIndx))
                 {
                     s_Sets.Clear();
-                    return transB.GetSiblingIndex() - siblingIndx;
+                    return siblingIndx - transB.GetSiblingIndex();
                 }
                 transB = transB.parent;
             }
