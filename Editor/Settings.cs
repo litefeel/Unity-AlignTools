@@ -12,6 +12,7 @@ namespace litefeel.AlignTools
     {
         Position,
         Hierarchy,
+        HierarchyFlipY,
     }
     public static class Settings
     {

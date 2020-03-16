@@ -129,10 +129,20 @@ namespace litefeel.AlignTools
                     v = calcValue(axis, corners, 0 == i, ref minV, ref maxV)
                 });
             };
-            if (Settings.DistributionOrder == DistributionOrder.Position)
-                vlist.Sort(SortByPosition);
-            else
-                vlist.Sort(SortByHierarchy);
+
+            switch(Settings.DistributionOrder)
+            {
+                case DistributionOrder.Position:
+                    vlist.Sort(SortByPosition);
+                    break;
+                case DistributionOrder.Hierarchy:
+                    vlist.Sort(SortByHierarchy);
+                    break;
+                case DistributionOrder.HierarchyFlipY:
+                    vlist.Sort(SortByHierarchy);
+                    vlist.Reverse();
+                    break;
+            }
 
             float gap = (maxV - minV) / (list.Count - 1);
             for (var i = 1; i < vlist.Count - 1; i++)
@@ -169,10 +179,20 @@ namespace litefeel.AlignTools
                     size = size,
                 });
             };
-            if (Settings.DistributionOrder == DistributionOrder.Position)
-                vlist.Sort(SortByPosition);
-            else
-                vlist.Sort(SortByHierarchy);
+
+            switch (Settings.DistributionOrder)
+            {
+                case DistributionOrder.Position:
+                    vlist.Sort(SortByPosition);
+                    break;
+                case DistributionOrder.Hierarchy:
+                    vlist.Sort(SortByHierarchy);
+                    break;
+                case DistributionOrder.HierarchyFlipY:
+                    vlist.Sort(SortByHierarchy);
+                    vlist.Reverse();
+                    break;
+            }
 
             float gap = (maxV - minV - sumSize) / (list.Count - 1);
             float curV = minV;
