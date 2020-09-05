@@ -1,26 +1,36 @@
 {
-    "name": "com.litefeel.aligntools",
-    "displayName": "AlignTools",
-    "version": "1.7.0",
-    "unity": "2018.2",
-    "description": "Align Tools is just perfect Unity asset plugin to align gui object.",
-    "keywords": [
-        "UI",
-        "Align",
-        "Tools"
-    ],
-    "author": {
-        "name": "litefeel",
-        "email": "litefeel@gmial.com",
-        "url": "https://www.litefeel.com"
-    },
-    "category": "Tools",
-    "dependencies": {},
-    "samples": [
-        {
-            "displayName": "Sample",
-            "description": "Sample for Align Tools",
-            "path": "Samples~/Sample"
-        }
-    ]
+  "name": "com.litefeel.aligntools",
+  "displayName": "AlignTools",
+  "version": "1.7.0",
+  "unity": "2018.2",
+  "description": "Align Tools is just perfect Unity asset plugin to align gui object.",
+  "keywords": [
+    "UI",
+    "Align",
+    "Tools"
+  ],
+  "author": {
+    "name": "litefeel",
+    "email": "litefeel@gmial.com",
+    "url": "https://www.litefeel.com"
+  },
+  "category": "Tools",
+  "type": "tool",
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Sample",
+      "description": "Sample for Align Tools",
+      "path": "Samples~/Sample"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/litefeel/Unity-AlignTools.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/litefeel/Unity-AlignTools/issues"
+  },
+  "homepage": "https://github.com/litefeel/Unity-AlignTools#readme"
 }
