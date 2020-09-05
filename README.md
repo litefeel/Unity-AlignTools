@@ -19,13 +19,34 @@
 
 ## Install
 
-#### Using UnityPackageManager (for Unity 2018.3+)
+#### By NPM (Ease upgrade in Package Manager UI)**Recommend**
+
+Find the manifest.json file in the Packages folder of your project and edit it to look like this:
+``` js
+{
+  "scopedRegistries": [
+    {
+      "name": "My Registry",
+      "url": "https://registry.npmjs.org",
+      "scopes": [
+        "com.litefeel"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.litefeel.aligntools": "1.7.0",
+    ...
+  }
+}
+```
+
+#### By git url
 
 Find the manifest.json file in the Packages folder of your project and edit it to look like this:
 ``` js
 {
   "dependencies": {
-    "com.litefeel.aligntools": "https://github.com/litefeel/Unity-AlignTools.git#upm",
+    "com.litefeel.aligntools": "https://github.com/litefeel/Unity-AlignTools.git#1.7.0",
     ...
   }
 }
