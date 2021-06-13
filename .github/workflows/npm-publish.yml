@@ -4,7 +4,7 @@ name: npm-publish
 on:
   push:
     branches:
-      - master # Change this to your default branch
+      - upm # Change this to your default branch
 jobs:
   npm-publish:
     name: npm-publish
