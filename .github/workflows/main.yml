@@ -15,19 +15,23 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2018.4.17f1
-          - 2019.4.9f1
-          - 2020.1.3f1
+          - 2019.4.20f1
+          - 2020.3.0f1
+          - 2021.1.0f1
     steps:
-      # Set env
-      - name: Set env UNITY_LICENSE_FILE
-        run: echo ::set-env name=UNITY_LICENSE_FILE::UnityLicense/${{ matrix.unityVersion }}.ulf
-
       # Checkout Empty Project
       - name: Checkout Empty Project
         uses: actions/checkout@v2
         with:
           repository: litefeel/UnityEmptyProject
+
+      # Set env
+      - name: Set env UNITY_LICENSE_FILE
+        run: |
+            echo 'UNITY_LICENSE<<EOF' >> $GITHUB_ENV
+            cat UnityLicense/${{ matrix.unityVersion }}.ulf >> $GITHUB_ENV
+            echo '' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
 
       # Checkout this project
       - name: Checkout repository
@@ -43,8 +47,8 @@ jobs:
           key: Library
 
       # Test
-      - name: Run tests
-        uses: webbertakken/unity-test-runner@v1.6
+      - name: Unity - Test runner
+        uses: game-ci/unity-test-runner@v2
         id: tests
         with:
           customParameters: "-nographics"
