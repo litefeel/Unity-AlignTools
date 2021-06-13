@@ -13,7 +13,7 @@ namespace litefeel.AlignTools
             var evt = Event.current;
             if (null == evt || evt.type != EventType.KeyDown) return;
 
-            int ox = 0, oy = 0, oz = 0;
+            int ox = 0, oy = 0;
             switch (evt.keyCode)
             {
                 case KeyCode.LeftArrow: ox = -1; break;
