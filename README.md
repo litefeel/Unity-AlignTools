@@ -13,7 +13,7 @@
 - Free
 - Align game object
 - Distribute GUI object
-- Tested with Unity 2018 and 2019 
+- Tested with Unity 2019 and 2020
 - No runtime resources required
 - No scripting required
 
@@ -34,7 +34,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
     }
   ],
   "dependencies": {
-    "com.litefeel.aligntools": "1.7.0",
+    "com.litefeel.aligntools": "1.8.0",
     ...
   }
 }
@@ -46,7 +46,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 ``` js
 {
   "dependencies": {
-    "com.litefeel.aligntools": "https://github.com/litefeel/Unity-AlignTools.git#1.7.0",
+    "com.litefeel.aligntools": "https://github.com/litefeel/Unity-AlignTools.git#1.8.0",
     ...
   }
 }
