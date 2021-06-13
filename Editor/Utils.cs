@@ -15,6 +15,11 @@ namespace litefeel.AlignTools
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
+        internal static Transform[] GetTransforms()
+        {
+            return Selection.transforms;
+        }
+
         internal static List<RectTransform> GetRectTransforms()
         {
             var arr = Selection.transforms;

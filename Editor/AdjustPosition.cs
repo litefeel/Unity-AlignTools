@@ -24,34 +24,26 @@ namespace litefeel.AlignTools
             if (ox != 0 || oy != 0)
             {
                 evt.Use();
-                
-                switch(Settings.OperatorMode)
+
+                var offset2 = new Vector2(ox, oy);
+                var offset3 = new Vector3(ox, oy, 0);
+                // shift change z for 3d
+                if(evt.shift)
+                    offset3 = new Vector3(0, 0, ox + oy);
+                if (evt.control)
                 {
-                    case OperatorMode.UGUI:
-                        var offset = new Vector2(ox, oy);
-                        if (evt.control) offset *= 10;
-                        foreach (var rt in Utils.GetRectTransforms())
-                        {
-                            Undo.RecordObject(rt, "AdjustPosition");
-                            rt.anchoredPosition += offset;
-                        }
-                        break;
-                    case OperatorMode.World:
-                        if (evt.shift)
-                        {
-                            oz = ox + oy;
-                            ox = oy = 0;
-                        }
-                        var offset3 = new Vector3(ox, oy, oz);
-                        if (evt.control) offset3 *= 10;
-                        foreach (var rt in Utils.GetWorldTransforms())
-                        {
-                            Undo.RecordObject(rt, "AdjustPosition");
-                            rt.position += offset3;
-                        }
-                        break;
+                    offset2 *= 10;
+                    offset3 *= 10;
                 }
-                
+
+                foreach(var trans in Utils.GetTransforms())
+                {
+                    Undo.RecordObject(trans, "AdjustPosition");
+                    if (trans is RectTransform)
+                        ((RectTransform)trans).anchoredPosition += offset2;
+                    else
+                        trans.localPosition += offset3;
+                }
             }
         }
     }
