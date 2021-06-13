@@ -1,3 +1,8 @@
+#### v1.8.0 - 2020-06-13
+- Added DistributionOrder
+- Fixed Error for GUI Layer
+- Automatic detection of gui and 3d objects when changing positions
+
 #### v1.7.0 - 2020-02-29
 - Support align 3d object
 
