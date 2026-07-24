@@ -1,0 +1,205 @@
+name: UPM Test (Unity Docker)
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+
+env:
+  UNITY_EDITOR_PATH: /opt/unity/Editor/Unity
+  UNITY_EMAIL: ci@litefeel.com
+  UNITY_PASSWORD: 123456Qq
+  UNITY_NON_INTERACTIVE: "true"
+  UNITY_NO_BANNER: "true"
+
+jobs:
+  test:
+    name: Test Unity ${{ matrix.unityVersion }} in Docker
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - "6000.5.5f1"
+    container:
+      image: unityci/editor:ubuntu-${{ matrix.unityVersion }}-base-3.2.2
+    timeout-minutes: 30
+    env:
+      UNITY_VERSION: ${{ matrix.unityVersion }}
+
+    steps:
+      - name: Checkout Personal license source
+        uses: actions/checkout@v6
+        with:
+          repository: litefeel/UnityEmptyProject
+          path: EmptyProject
+          sparse-checkout: UnityLicense/Unity_lic.ulf
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+          path: MyPlugin
+
+      - name: Prepare Personal license
+        shell: bash
+        run: |
+          developer_data="$(
+            sed -n 's/.*<DeveloperData Value="\([^"]*\)".*/\1/p' \
+              EmptyProject/UnityLicense/Unity_lic.ulf
+          )"
+          if [[ -z "$developer_data" ]]; then
+            echo "::error::Cannot read DeveloperData from the Unity license file."
+            exit 1
+          fi
+
+          unity_serial="$(
+            printf '%s' "$developer_data" | base64 --decode | cut -c 5-
+          )"
+          if [[ -z "$unity_serial" ]]; then
+            echo "::error::Cannot decode the Unity Personal license serial."
+            exit 1
+          fi
+
+          echo "::add-mask::$unity_serial"
+          echo "UNITY_SERIAL=$unity_serial" >> "$GITHUB_ENV"
+
+      - name: Activate Unity Personal license
+        shell: bash
+        run: |
+          license_project="$RUNNER_TEMP/UnityLicenseProject"
+          mkdir -p "$license_project/Assets"
+
+          attempt=1
+          delay=15
+          until "$UNITY_EDITOR_PATH" \
+            -logFile - \
+            -quit \
+            -serial "$UNITY_SERIAL" \
+            -username "$UNITY_EMAIL" \
+            -password "$UNITY_PASSWORD" \
+            -projectPath "$license_project" \
+            -batchmode \
+            -nographics
+          do
+            if [[ "$attempt" -ge 5 ]]; then
+              echo "::error::License activation failed after $attempt attempts."
+              exit 1
+            fi
+
+            echo "Activation attempt $attempt failed; retrying in ${delay}s."
+            sleep "$delay"
+            delay=$((delay * 2))
+            attempt=$((attempt + 1))
+          done
+
+          echo "UNITY_LICENSE_ACTIVATED=true" >> "$GITHUB_ENV"
+
+      - name: Create default Unity project
+        shell: bash
+        run: |
+          test_project=/tmp/UnityTestProject
+          "$UNITY_EDITOR_PATH" \
+            -batchmode \
+            -nographics \
+            -quit \
+            -createProject "$test_project" \
+            -logFile -
+          echo "UNITY_TEST_PROJECT=$test_project" >> "$GITHUB_ENV"
+
+      - name: Read Unity package defaults
+        shell: bash
+        run: |
+          built_in_packages="$(dirname "$UNITY_EDITOR_PATH")/Data/Resources/PackageManager/BuiltInPackages"
+          test_framework_manifest="$(
+            find "$built_in_packages" -type f \
+              -path '*/com.unity.test-framework/package.json' \
+              -print -quit 2>/dev/null || true
+          )"
+          ugui_manifest="$(
+            find "$built_in_packages" -type f \
+              -path '*/com.unity.ugui/package.json' \
+              -print -quit 2>/dev/null || true
+          )"
+
+          if [[ -z "$test_framework_manifest" || -z "$ugui_manifest" ]]; then
+            echo "::error::Cannot find Unity's built-in test-framework and ugui metadata."
+            exit 1
+          fi
+
+          jq -n \
+            --arg testFrameworkVersion \
+              "$(jq -er '.version' "$test_framework_manifest")" \
+            --arg uguiVersion \
+              "$(jq -er '.version' "$ugui_manifest")" \
+            '{
+              dependencies: {
+                "com.unity.test-framework": $testFrameworkVersion,
+                "com.unity.ugui": $uguiVersion
+              }
+            }' > /tmp/unity-default-packages.json
+          cat /tmp/unity-default-packages.json
+
+      - name: Prepare test project
+        shell: bash
+        run: |
+          jq \
+            --slurpfile unityDefaults /tmp/unity-default-packages.json \
+            --arg packageName "com.litefeel.aligntools" \
+            --arg pluginPath "file:$GITHUB_WORKSPACE/MyPlugin" \
+            '{
+              dependencies: {
+                "com.unity.test-framework":
+                  $unityDefaults[0].dependencies["com.unity.test-framework"],
+                "com.unity.ugui":
+                  $unityDefaults[0].dependencies["com.unity.ugui"],
+                ($packageName): $pluginPath
+              },
+              testables: [$packageName]
+            }' \
+            "$UNITY_TEST_PROJECT/Packages/manifest.json" \
+              > "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp"
+          mv "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp" \
+            "$UNITY_TEST_PROJECT/Packages/manifest.json"
+          rm -f "$UNITY_TEST_PROJECT/Packages/packages-lock.json"
+          mkdir -p artifacts
+          cat "$UNITY_TEST_PROJECT/Packages/manifest.json"
+
+      - name: Run EditMode tests
+        shell: bash
+        run: |
+          timeout --preserve-status 15m \
+            "$UNITY_EDITOR_PATH" \
+            -projectPath "$UNITY_TEST_PROJECT" \
+            -batchmode \
+            -nographics \
+            -runTests \
+            -testPlatform editmode \
+            -testResults "$GITHUB_WORKSPACE/artifacts/test-results.xml" \
+            -logFile -
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Test results on Unity ${{ env.UNITY_VERSION }}
+          path: artifacts
+          if-no-files-found: warn
+
+      - name: Return Unity license
+        if: always() && env.UNITY_LICENSE_ACTIVATED == 'true'
+        continue-on-error: true
+        shell: bash
+        run: |
+          "$UNITY_EDITOR_PATH" \
+            -logFile - \
+            -nographics \
+            -batchmode \
+            -quit \
+            -returnlicense \
+            -username "$UNITY_EMAIL" \
+            -password "$UNITY_PASSWORD" \
+            -projectPath "$RUNNER_TEMP/UnityLicenseProject"
