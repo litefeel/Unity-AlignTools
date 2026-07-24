@@ -57,14 +57,27 @@ jobs:
           --yes
           --non-interactive
 
-      - name: Create temporary Unity project
+      - name: Locate Unity Editor
         shell: bash
         run: |
-          unity projects create UnityTestProject \
-            --path "$RUNNER_TEMP" \
-            --editor-version "${{ matrix.unityVersion }}" \
-            --template com.unity.template.3d
-          echo "UNITY_TEST_PROJECT=$RUNNER_TEMP/UnityTestProject" >> "$GITHUB_ENV"
+          editor_path=""
+          while IFS= read -r install_root || [[ -n "$install_root" ]]; do
+            [[ -z "$install_root" ]] && continue
+            editor_path="$(
+              find "$install_root" -maxdepth 3 -type f -name Unity \
+                -print -quit
+            )"
+            [[ -n "$editor_path" ]] && break
+          done < <(unity install-path)
+
+          if [[ -z "$editor_path" ]]; then
+            echo "::error::Cannot find the installed Unity Editor."
+            unity install-path
+            exit 1
+          fi
+
+          echo "Using Unity Editor: $editor_path"
+          echo "UNITY_EDITOR_PATH=$editor_path" >> "$GITHUB_ENV"
 
       - name: Prepare Personal license
         shell: bash
@@ -89,6 +102,46 @@ jobs:
           echo "::add-mask::$unity_serial"
           echo "UNITY_SERIAL=$unity_serial" >> "$GITHUB_ENV"
 
+      - name: Activate Unity Personal license
+        shell: bash
+        run: |
+          license_project="$RUNNER_TEMP/UnityLicenseProject"
+          mkdir -p "$license_project/Assets"
+
+          attempt=1
+          delay=15
+          until "$UNITY_EDITOR_PATH" \
+            -logFile - \
+            -quit \
+            -serial "$UNITY_SERIAL" \
+            -username "$UNITY_EMAIL" \
+            -password "$UNITY_PASSWORD" \
+            -projectPath "$license_project" \
+            -batchmode \
+            -nographics
+          do
+            if [[ "$attempt" -ge 5 ]]; then
+              echo "::error::License activation failed after $attempt attempts."
+              exit 1
+            fi
+
+            echo "Activation attempt $attempt failed; retrying in ${delay}s."
+            sleep "$delay"
+            delay=$((delay * 2))
+            attempt=$((attempt + 1))
+          done
+
+          echo "UNITY_LICENSE_ACTIVATED=true" >> "$GITHUB_ENV"
+
+      - name: Create temporary Unity project
+        shell: bash
+        run: |
+          unity projects create UnityTestProject \
+            --path "$RUNNER_TEMP" \
+            --editor-version "${{ matrix.unityVersion }}" \
+            --template com.unity.template.3d
+          echo "UNITY_TEST_PROJECT=$RUNNER_TEMP/UnityTestProject" >> "$GITHUB_ENV"
+
       - name: Prepare test project
         shell: bash
         run: |
@@ -107,19 +160,6 @@ jobs:
           mkdir -p artifacts
           cat "$UNITY_TEST_PROJECT/Packages/manifest.json"
 
-      - name: Activate Unity Personal license
-        shell: bash
-        run: |
-          unity run "$UNITY_TEST_PROJECT" \
-            --editor-version "${{ matrix.unityVersion }}" \
-            --timeout 600 \
-            -- \
-            -nographics \
-            -quit \
-            -serial "$UNITY_SERIAL" \
-            -username "$UNITY_EMAIL" \
-            -password "$UNITY_PASSWORD"
-
       - name: Run tests
         shell: bash
         run: |
@@ -137,16 +177,16 @@ jobs:
           if-no-files-found: warn
 
       - name: Return Unity license
-        if: always() && env.UNITY_SERIAL != ''
+        if: always() && env.UNITY_LICENSE_ACTIVATED == 'true'
         continue-on-error: true
         shell: bash
         run: |
-          unity run "$UNITY_TEST_PROJECT" \
-            --editor-version "${{ matrix.unityVersion }}" \
-            --timeout 600 \
-            -- \
+          "$UNITY_EDITOR_PATH" \
+            -logFile - \
             -nographics \
+            -batchmode \
             -quit \
             -returnlicense \
             -username "$UNITY_EMAIL" \
-            -password "$UNITY_PASSWORD"
+            -password "$UNITY_PASSWORD" \
+            -projectPath "$RUNNER_TEMP/UnityLicenseProject"
