@@ -1,0 +1,152 @@
+name: UPM Test (Unity CLI)
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+
+env:
+  UNITY_EMAIL: ci@litefeel.com
+  UNITY_PASSWORD: 123456Qq
+  UNITY_NON_INTERACTIVE: "true"
+  UNITY_NO_BANNER: "true"
+
+jobs:
+  test:
+    name: Test Unity ${{ matrix.unityVersion }} with Unity CLI
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - unityVersion: "6.5"
+            testFrameworkVersion: "6.5.0"
+            uguiVersion: "2.0.0"
+
+    steps:
+      - name: Checkout Personal license source
+        uses: actions/checkout@v6
+        with:
+          repository: litefeel/UnityEmptyProject
+          path: EmptyProject
+          sparse-checkout: UnityLicense/Unity_lic.ulf
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+          path: MyPlugin
+
+      - name: Install latest Unity CLI
+        shell: bash
+        run: |
+          curl -fsSL https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.sh \
+            | UNITY_CLI_CHANNEL=beta bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/unity" --version
+
+      - name: Install Unity Editor
+        shell: bash
+        run: >-
+          unity install "${{ matrix.unityVersion }}"
+          --accept-eula
+          --yes
+          --non-interactive
+
+      - name: Create temporary Unity project
+        shell: bash
+        run: |
+          unity projects create UnityTestProject \
+            --path "$RUNNER_TEMP" \
+            --editor-version "${{ matrix.unityVersion }}" \
+            --template com.unity.template.3d
+          echo "UNITY_TEST_PROJECT=$RUNNER_TEMP/UnityTestProject" >> "$GITHUB_ENV"
+
+      - name: Prepare Personal license
+        shell: bash
+        run: |
+          developer_data="$(
+            sed -n 's/.*<DeveloperData Value="\([^"]*\)".*/\1/p' \
+              EmptyProject/UnityLicense/Unity_lic.ulf
+          )"
+          if [[ -z "$developer_data" ]]; then
+            echo "::error::Cannot read DeveloperData from the Unity license file."
+            exit 1
+          fi
+
+          unity_serial="$(
+            printf '%s' "$developer_data" | base64 --decode | cut -c 5-
+          )"
+          if [[ -z "$unity_serial" ]]; then
+            echo "::error::Cannot decode the Unity Personal license serial."
+            exit 1
+          fi
+
+          echo "::add-mask::$unity_serial"
+          echo "UNITY_SERIAL=$unity_serial" >> "$GITHUB_ENV"
+
+      - name: Prepare test project
+        shell: bash
+        run: |
+          jq \
+            --arg pluginPath "file:$GITHUB_WORKSPACE/MyPlugin" \
+            --arg testFrameworkVersion "${{ matrix.testFrameworkVersion }}" \
+            --arg uguiVersion "${{ matrix.uguiVersion }}" \
+            '.dependencies["com.litefeel.aligntools"] = $pluginPath |
+             .dependencies["com.unity.test-framework"] = $testFrameworkVersion |
+             .dependencies["com.unity.ugui"] = $uguiVersion' \
+            "$UNITY_TEST_PROJECT/Packages/manifest.json" \
+              > "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp"
+          mv "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp" \
+            "$UNITY_TEST_PROJECT/Packages/manifest.json"
+          rm -f "$UNITY_TEST_PROJECT/Packages/packages-lock.json"
+          mkdir -p artifacts
+          cat "$UNITY_TEST_PROJECT/Packages/manifest.json"
+
+      - name: Activate Unity Personal license
+        shell: bash
+        run: |
+          unity run "$UNITY_TEST_PROJECT" \
+            --editor-version "${{ matrix.unityVersion }}" \
+            --timeout 600 \
+            -- \
+            -nographics \
+            -quit \
+            -serial "$UNITY_SERIAL" \
+            -username "$UNITY_EMAIL" \
+            -password "$UNITY_PASSWORD"
+
+      - name: Run tests
+        shell: bash
+        run: |
+          unity test "$UNITY_TEST_PROJECT" \
+            --editor-version "${{ matrix.unityVersion }}" \
+            --output "$GITHUB_WORKSPACE/artifacts/test-results.xml" \
+            --timeout 1800
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Test results on Unity ${{ matrix.unityVersion }}
+          path: artifacts
+          if-no-files-found: warn
+
+      - name: Return Unity license
+        if: always() && env.UNITY_SERIAL != ''
+        continue-on-error: true
+        shell: bash
+        run: |
+          unity run "$UNITY_TEST_PROJECT" \
+            --editor-version "${{ matrix.unityVersion }}" \
+            --timeout 600 \
+            -- \
+            -nographics \
+            -quit \
+            -returnlicense \
+            -username "$UNITY_EMAIL" \
+            -password "$UNITY_PASSWORD"
