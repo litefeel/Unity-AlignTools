@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: npm-publish-${{ github.ref }}
@@ -29,6 +30,7 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+          package-manager-cache: false
 
       - name: Read package metadata
         id: package
@@ -57,6 +59,4 @@ jobs:
       - name: Publish package
         if: steps.published.outputs.value == 'false'
         shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: npm publish --access public
