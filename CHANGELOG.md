@@ -1,3 +1,6 @@
+#### Unreleased
+- Fixed compilation on Unity 6.4 and newer by using the EntityId-based Hierarchy callback while retaining the legacy callback on older Unity versions.
+
 #### v1.8.0 - 2020-06-13
 - Added DistributionOrder
 - Fixed Error for GUI Layer
