@@ -8,6 +8,9 @@ permissions:
   contents: read
 
 env:
+  UNITY_CLI_VERSION: "1.0.0-beta.2"
+  UNITY_CLI_SHA256: "39d3f7b67e45a964207a20cd62f59b9f842bbacc8a5da6605771b7814bad359f"
+  UNITY_EDITOR_PATH: /opt/unity/Editor/Unity
   UNITY_EMAIL: ci@litefeel.com
   UNITY_PASSWORD: 123456Qq
   UNITY_NON_INTERACTIVE: "true"
@@ -17,14 +20,16 @@ jobs:
   test:
     name: Test Unity ${{ matrix.unityVersion }} with Unity CLI
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - unityVersion: "6.5"
-            testFrameworkVersion: "6.5.0"
-            uguiVersion: "2.0.0"
+        unityVersion:
+          - "6000.5.5f1"
+    container:
+      image: unityci/editor:ubuntu-${{ matrix.unityVersion }}-base-3.2.2
+    timeout-minutes: 30
+    env:
+      UNITY_VERSION: ${{ matrix.unityVersion }}
 
     steps:
       - name: Checkout Personal license source
@@ -41,43 +46,25 @@ jobs:
           lfs: true
           path: MyPlugin
 
-      - name: Install latest Unity CLI
+      - name: Install pinned Unity CLI
         shell: bash
         run: |
-          curl -fsSL https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.sh \
-            | UNITY_CLI_CHANNEL=beta bash
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          "$HOME/.local/bin/unity" --version
+          cli_home="$RUNNER_TEMP/unity-cli"
+          cli_binary="$cli_home/bin/unity"
+          mkdir -p "$cli_home/bin"
 
-      - name: Install Unity Editor
-        shell: bash
-        run: >-
-          unity install "${{ matrix.unityVersion }}"
-          --accept-eula
-          --yes
-          --non-interactive
+          curl -fsSL \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-delay 5 \
+            "https://public-cdn.cloud.unity3d.com/hub/prod/cli/$UNITY_CLI_VERSION/unity-linux-x64" \
+            -o "$cli_binary"
 
-      - name: Locate Unity Editor
-        shell: bash
-        run: |
-          editor_path=""
-          while IFS= read -r install_root || [[ -n "$install_root" ]]; do
-            [[ -z "$install_root" ]] && continue
-            editor_path="$(
-              find "$install_root" -maxdepth 3 -type f -name Unity \
-                -print -quit
-            )"
-            [[ -n "$editor_path" ]] && break
-          done < <(unity install-path)
-
-          if [[ -z "$editor_path" ]]; then
-            echo "::error::Cannot find the installed Unity Editor."
-            unity install-path
-            exit 1
-          fi
-
-          echo "Using Unity Editor: $editor_path"
-          echo "UNITY_EDITOR_PATH=$editor_path" >> "$GITHUB_ENV"
+          printf '%s  %s\n' "$UNITY_CLI_SHA256" "$cli_binary" \
+            | sha256sum --check --strict
+          chmod +x "$cli_binary"
+          echo "$cli_home/bin" >> "$GITHUB_PATH"
+          "$cli_binary" --version
 
       - name: Prepare Personal license
         shell: bash
@@ -133,25 +120,61 @@ jobs:
 
           echo "UNITY_LICENSE_ACTIVATED=true" >> "$GITHUB_ENV"
 
-      - name: Create temporary Unity project
+      - name: Create default Unity project
         shell: bash
         run: |
-          unity projects create UnityTestProject \
-            --path "$RUNNER_TEMP" \
-            --editor-version "${{ matrix.unityVersion }}" \
-            --template com.unity.template.3d
-          echo "UNITY_TEST_PROJECT=$RUNNER_TEMP/UnityTestProject" >> "$GITHUB_ENV"
+          test_project=/tmp/UnityTestProject
+          "$UNITY_EDITOR_PATH" \
+            -batchmode \
+            -nographics \
+            -quit \
+            -createProject "$test_project" \
+            -logFile -
+          echo "UNITY_TEST_PROJECT=$test_project" >> "$GITHUB_ENV"
+
+      - name: Read Unity 3D template package defaults
+        shell: bash
+        run: |
+          template_dir="$(dirname "$UNITY_EDITOR_PATH")/Data/Resources/PackageManager/ProjectTemplates"
+          template_archive="$(
+            find "$template_dir" -maxdepth 1 -type f \
+              -name 'com.unity.template.3d-*.tgz' -print -quit
+          )"
+          if [[ -z "$template_archive" ]]; then
+            echo "::error::Cannot find the Unity 3D project template."
+            exit 1
+          fi
+
+          manifest_entry="$(
+            tar -tzf "$template_archive" \
+              | grep '/Packages/manifest.json$' \
+              | head -n 1
+          )"
+          if [[ -z "$manifest_entry" ]]; then
+            echo "::error::Cannot find Packages/manifest.json in $template_archive."
+            exit 1
+          fi
+
+          tar -xOzf "$template_archive" "$manifest_entry" \
+            > /tmp/unity-template-manifest.json
 
       - name: Prepare test project
         shell: bash
         run: |
           jq \
+            --slurpfile unityDefaults /tmp/unity-template-manifest.json \
+            --arg packageName "com.litefeel.aligntools" \
             --arg pluginPath "file:$GITHUB_WORKSPACE/MyPlugin" \
-            --arg testFrameworkVersion "${{ matrix.testFrameworkVersion }}" \
-            --arg uguiVersion "${{ matrix.uguiVersion }}" \
-            '.dependencies["com.litefeel.aligntools"] = $pluginPath |
-             .dependencies["com.unity.test-framework"] = $testFrameworkVersion |
-             .dependencies["com.unity.ugui"] = $uguiVersion' \
+            '{
+              dependencies: {
+                "com.unity.test-framework":
+                  $unityDefaults[0].dependencies["com.unity.test-framework"],
+                "com.unity.ugui":
+                  $unityDefaults[0].dependencies["com.unity.ugui"],
+                ($packageName): $pluginPath
+              },
+              testables: [$packageName]
+            }' \
             "$UNITY_TEST_PROJECT/Packages/manifest.json" \
               > "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp"
           mv "$UNITY_TEST_PROJECT/Packages/manifest.json.tmp" \
@@ -160,19 +183,24 @@ jobs:
           mkdir -p artifacts
           cat "$UNITY_TEST_PROJECT/Packages/manifest.json"
 
-      - name: Run tests
+      - name: Run EditMode tests
         shell: bash
         run: |
-          unity test "$UNITY_TEST_PROJECT" \
-            --editor-version "${{ matrix.unityVersion }}" \
-            --output "$GITHUB_WORKSPACE/artifacts/test-results.xml" \
-            --timeout 1800
+          timeout --preserve-status 15m \
+            "$UNITY_EDITOR_PATH" \
+            -projectPath "$UNITY_TEST_PROJECT" \
+            -batchmode \
+            -nographics \
+            -runTests \
+            -testPlatform editmode \
+            -testResults "$GITHUB_WORKSPACE/artifacts/test-results.xml" \
+            -logFile -
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: Test results on Unity ${{ matrix.unityVersion }}
+          name: Test results on Unity ${{ env.UNITY_VERSION }}
           path: artifacts
           if-no-files-found: warn
 

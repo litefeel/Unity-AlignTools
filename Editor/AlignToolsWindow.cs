@@ -162,7 +162,11 @@ namespace litefeel.AlignTools
 #else
             SceneView.onSceneGUIDelegate += OnSceneGUI;
 #endif
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnHierarchyWindowItemByEntityIdOnGUI;
+#else
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
+#endif
         }
 
         private void OnDisable()
@@ -172,10 +176,18 @@ namespace litefeel.AlignTools
 #else
             SceneView.onSceneGUIDelegate -= OnSceneGUI;
 #endif
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= OnHierarchyWindowItemByEntityIdOnGUI;
+#else
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyWindowItemOnGUI;
+#endif
         }
 
+#if UNITY_6000_4_OR_NEWER
+        private void OnHierarchyWindowItemByEntityIdOnGUI(EntityId entityId, Rect selectionRect)
+#else
         private void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+#endif
         {
             AdjustPosition.Execute();
         }
