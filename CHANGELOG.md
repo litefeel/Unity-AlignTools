@@ -1,3 +1,7 @@
+#### v1.8.2 - 2026-07-25
+- Changed the minimum supported Unity version to 2019.4
+- Fixed the missing meta file warning for the package Tests folder
+
 #### v1.8.1 - 2026-07-25
 - Added support for Unity 6.4 and newer by using the EntityId hierarchy window callback
 - Added automated compatibility testing for Unity 6.5
