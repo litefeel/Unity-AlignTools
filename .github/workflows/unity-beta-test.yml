@@ -97,10 +97,6 @@ jobs:
       - name: Prepare Personal license
         shell: bash
         run: |
-          dbus-uuidgen > /etc/machine-id
-          mkdir -p /var/lib/dbus
-          ln -sf /etc/machine-id /var/lib/dbus/machine-id
-
           developer_data="$(
             sed -n 's/.*<DeveloperData Value="\([^"]*\)".*/\1/p' \
               EmptyProject/UnityLicense/Unity_lic.ulf
