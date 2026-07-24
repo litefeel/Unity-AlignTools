@@ -1,3 +1,7 @@
+#### v1.8.1 - 2026-07-25
+- Added support for Unity 6.4 and newer by using the EntityId hierarchy window callback
+- Added automated compatibility testing for Unity 6.5
+
 #### v1.8.0 - 2020-06-13
 - Added DistributionOrder
 - Fixed Error for GUI Layer

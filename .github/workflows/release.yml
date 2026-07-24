@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - upm
+    paths:
+      - package.json
+      - CHANGELOG.md
+      - .github/workflows/release.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Create package release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Read and validate version
+        id: version
+        shell: bash
+        run: |
+          version="$(jq -r '.version' package.json)"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid package version: $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          awk -v version="$VERSION" '
+            $0 ~ "^#### v" version " - " { found = 1; next }
+            found && /^#### v/ { exit }
+            found { print }
+            END { if (!found) exit 1 }
+          ' CHANGELOG.md > release-notes.md
+          if [[ ! -s release-notes.md ]]; then
+            echo "::error::No release notes found for $VERSION"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; nothing to do."
+            exit 0
+          fi
+          gh release create "$VERSION" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --notes-file release-notes.md
